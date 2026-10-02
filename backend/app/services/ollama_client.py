@@ -69,3 +69,27 @@ def split_script_answers(script_text: str, question_numbers: list[str]) -> list[
     )
     result = chat_structured(system_prompt, script_text, ANSWER_SPLIT_SCHEMA)
     return result.get("answers", [])
+
+
+def mark_answer(
+    question_number: str, expected_answer: str, max_mark: float, learner_answer: str
+) -> dict:
+    """Return {proposed_mark, reason, confidence} for one question's learner answer."""
+    from ..schemas import PER_QUESTION_MARKING_SCHEMA
+
+    system_prompt = (
+        "You are an assistant marking one question of a learner's assessment. You are given "
+        "the memorandum's expected answer, the marks available, and the learner's actual "
+        "answer. Propose a mark out of the available marks, give a short plain-language reason "
+        "(one or two sentences), and state your confidence (0-100) that the proposed mark is "
+        "correct. Recognize valid alternative methods and carried-forward errors as full or "
+        "partial credit where appropriate. Lower your confidence when the answer is ambiguous, "
+        "uses an unconventional method, or is a borderline case."
+    )
+    user_prompt = (
+        f"Question {question_number} (out of {max_mark} marks)\n"
+        f"Expected answer: {expected_answer}\n"
+        f"Learner's answer: {learner_answer or '(no answer given)'}"
+    )
+    result = chat_structured(system_prompt, user_prompt, PER_QUESTION_MARKING_SCHEMA)
+    return result

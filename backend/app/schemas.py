@@ -49,6 +49,32 @@ class LearnerScriptOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class MarkingResultOut(BaseModel):
+    id: int
+    question_number: str
+    proposed_mark: float
+    max_mark: float
+    reason: str
+    confidence: float
+    final_mark: float | None
+    status: str
+
+    model_config = {"from_attributes": True}
+
+
+class MarkingResultUpdate(BaseModel):
+    final_mark: float
+    status: str  # "confirmed" | "changed"
+
+
+class ScriptSummaryOut(BaseModel):
+    final_score: float
+    max_score: float
+    final_percentage: float
+    all_reviewed: bool
+    unresolved_questions: list[str]
+
+
 # ---- Ollama structured-output JSON schemas ----
 
 # Call shape 1: memo extraction -> list of {question, expected_answer, max_mark}
@@ -89,4 +115,15 @@ ANSWER_SPLIT_SCHEMA = {
         }
     },
     "required": ["answers"],
+}
+
+# Call shape 2: per-question marking -> {proposed_mark, reason, confidence}
+PER_QUESTION_MARKING_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "proposed_mark": {"type": "number"},
+        "reason": {"type": "string"},
+        "confidence": {"type": "number"},
+    },
+    "required": ["proposed_mark", "reason", "confidence"],
 }

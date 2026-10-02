@@ -89,3 +89,40 @@ export async function uploadScript(
   );
   return handle<LearnerScript>(response);
 }
+
+export interface MarkingResult {
+  id: number;
+  question_number: string;
+  proposed_mark: number;
+  max_mark: number;
+  reason: string;
+  confidence: number;
+  final_mark: number | null;
+  status: "proposed" | "confirmed" | "changed";
+}
+
+export const CONFIDENCE_THRESHOLD = 70;
+
+export async function startMarking(scriptId: number): Promise<MarkingResult[]> {
+  const response = await fetch(`${API_BASE}/api/scripts/${scriptId}/mark`, {
+    method: "POST",
+  });
+  return handle<MarkingResult[]>(response);
+}
+
+export async function updateMarkingResult(
+  scriptId: number,
+  questionNumber: string,
+  finalMark: number,
+  status: "confirmed" | "changed"
+): Promise<MarkingResult> {
+  const response = await fetch(
+    `${API_BASE}/api/scripts/${scriptId}/results/${encodeURIComponent(questionNumber)}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ final_mark: finalMark, status }),
+    }
+  );
+  return handle<MarkingResult>(response);
+}
