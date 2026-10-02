@@ -53,3 +53,19 @@ def extract_memo_questions(memo_text: str) -> list[dict]:
     )
     result = chat_structured(system_prompt, memo_text, MEMO_EXTRACTION_SCHEMA)
     return result.get("questions", [])
+
+
+def split_script_answers(script_text: str, question_numbers: list[str]) -> list[dict]:
+    """Return a list of {question_number, answer_text} dicts split from a learner's script."""
+    from ..schemas import ANSWER_SPLIT_SCHEMA
+
+    system_prompt = (
+        "You are an assistant that splits a learner's assessment script into per-question "
+        "answers. The memorandum has these question numbers, in order: "
+        f"{', '.join(question_numbers)}. Read the learner's script text and return one entry "
+        "per question number, with 'question_number' matching exactly one of the numbers above "
+        "and 'answer_text' containing that question's answer as written by the learner. If a "
+        "question has no answer in the script, return an empty string for answer_text."
+    )
+    result = chat_structured(system_prompt, script_text, ANSWER_SPLIT_SCHEMA)
+    return result.get("answers", [])

@@ -2,13 +2,16 @@ import { useState } from "react";
 import Landing from "./screens/Landing";
 import MemoUpload from "./screens/MemoUpload";
 import MemoCheck from "./screens/MemoCheck";
-import type { Memorandum } from "./api/client";
+import ScriptUpload from "./screens/ScriptUpload";
+import ScriptReady from "./screens/ScriptReady";
+import type { LearnerScript, Memorandum } from "./api/client";
 
-type Step = "landing" | "upload" | "check" | "confirmed";
+type Step = "landing" | "upload" | "check" | "scriptUpload" | "scriptReady";
 
 function App() {
   const [step, setStep] = useState<Step>("landing");
   const [memorandum, setMemorandum] = useState<Memorandum | null>(null);
+  const [script, setScript] = useState<LearnerScript | null>(null);
 
   if (step === "landing") {
     return <Landing onUploadClick={() => setStep("upload")} />;
@@ -30,23 +33,30 @@ function App() {
         onMemoUpdated={setMemorandum}
         onConfirmed={(memo) => {
           setMemorandum(memo);
-          setStep("confirmed");
+          setStep("scriptUpload");
         }}
       />
     );
   }
-  if (step === "confirmed" && memorandum) {
-    // Learner script upload arrives in the next build slice.
+  if (step === "scriptUpload" && memorandum) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="bg-white rounded-2xl shadow-md p-10 max-w-lg w-full text-center space-y-3">
-          <h2 className="text-xl font-semibold text-navy">Memorandum Confirmed</h2>
-          <p className="text-gray-500 text-sm">
-            {memorandum.filename} is confirmed with {memorandum.questions.length} question(s).
-            Learner script upload comes next.
-          </p>
-        </div>
-      </div>
+      <ScriptUpload
+        memorandumId={memorandum.id}
+        onReady={(s) => {
+          setScript(s);
+          setStep("scriptReady");
+        }}
+      />
+    );
+  }
+  if (step === "scriptReady" && script) {
+    return (
+      <ScriptReady
+        script={script}
+        onStartMarking={() => {
+          // AI marking arrives in the next build slice.
+        }}
+      />
     );
   }
   return null;

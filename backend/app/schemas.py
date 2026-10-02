@@ -29,6 +29,26 @@ class MemoQuestionUpdate(BaseModel):
     max_mark: float | None = None
 
 
+class ScriptAnswerOut(BaseModel):
+    id: int
+    question_number: str
+    answer_text: str
+
+    model_config = {"from_attributes": True}
+
+
+class LearnerScriptOut(BaseModel):
+    id: int
+    memorandum_id: int
+    filename: str
+    status: str
+    final_score: float | None
+    final_percentage: float | None
+    answers: list[ScriptAnswerOut]
+
+    model_config = {"from_attributes": True}
+
+
 # ---- Ollama structured-output JSON schemas ----
 
 # Call shape 1: memo extraction -> list of {question, expected_answer, max_mark}
@@ -49,4 +69,24 @@ MEMO_EXTRACTION_SCHEMA = {
         }
     },
     "required": ["questions"],
+}
+
+# Call shape 3: split a learner's script text into per-question answers,
+# matching the memo's question numbers.
+ANSWER_SPLIT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "answers": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "question_number": {"type": "string"},
+                    "answer_text": {"type": "string"},
+                },
+                "required": ["question_number", "answer_text"],
+            },
+        }
+    },
+    "required": ["answers"],
 }

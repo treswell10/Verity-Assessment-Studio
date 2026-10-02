@@ -33,7 +33,7 @@ Build mode: fast
   Learner check: Edit a question that looks wrong, save it, confirm the correction shows, then click "Looks Good, Continue."
   Commit: `Add memo question editing and confirmation`
 
-- [ ] **3. Upload a learner script**
+- [x] **3. Upload a learner script**
   Becomes usable: After confirming the memo, the teacher uploads one learner script and sees "Learner Script Ready," with its answers split per question behind the scenes.
   Why now: The next real risk — splitting a learner's free-form answer text into per-question answers — needs to be proven before marking can use it.
   PRD ref: `prd.md > Learner script intake`, `prd.md > Screens and Layout` (Upload Learner Script, Learner Script Ready)

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import init_db
-from .routers import memoranda
+from .routers import memoranda, scripts
 
 app = FastAPI(title="Verity Assessment Studio API")
 
@@ -16,6 +16,7 @@ app.add_middleware(
 )
 
 app.include_router(memoranda.router)
+app.include_router(scripts.router)
 
 
 @app.on_event("startup")
