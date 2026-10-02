@@ -23,7 +23,7 @@ Build mode: fast
   Learner check: Open the app, upload a memo file you prepare, and confirm the extracted questions look roughly right.
   Commit: `Scaffold app and add memo upload with AI extraction`
 
-- [ ] **2. Check, correct, and confirm the memorandum**
+- [x] **2. Check, correct, and confirm the memorandum**
   Becomes usable: The teacher can edit any extracted question and explicitly confirm the memo ("Looks Good, Continue") before anything else happens.
   Why now: The kernel's trust model starts here — the AI-extracted standard is never used unchecked. This has to work before a script is ever marked against it.
   PRD ref: `prd.md > Memorandum intake and correction`, `prd.md > Screens and Layout` (Check Your Memorandum, Edit Question)

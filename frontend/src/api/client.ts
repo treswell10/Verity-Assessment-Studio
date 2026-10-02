@@ -32,3 +32,31 @@ export async function uploadMemorandum(file: File): Promise<Memorandum> {
   });
   return handle<Memorandum>(response);
 }
+
+export async function getMemorandum(memorandumId: number): Promise<Memorandum> {
+  const response = await fetch(`${API_BASE}/api/memoranda/${memorandumId}`);
+  return handle<Memorandum>(response);
+}
+
+export async function updateMemoQuestion(
+  memorandumId: number,
+  questionId: number,
+  update: { question_number?: string; expected_answer?: string; max_mark?: number }
+): Promise<Memorandum> {
+  const response = await fetch(
+    `${API_BASE}/api/memoranda/${memorandumId}/questions/${questionId}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(update),
+    }
+  );
+  return handle<Memorandum>(response);
+}
+
+export async function confirmMemorandum(memorandumId: number): Promise<Memorandum> {
+  const response = await fetch(`${API_BASE}/api/memoranda/${memorandumId}`, {
+    method: "PATCH",
+  });
+  return handle<Memorandum>(response);
+}
