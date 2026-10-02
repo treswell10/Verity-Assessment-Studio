@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Verity Assessment Studio — PRD</title>
+<style>
+  :root {
+    --ink:#16202b; --muted:#5b6878; --paper:#fbfaf7; --line:#dfe3e8;
+    --navy:#1f3350; --navy-soft:#e7edf5;
+    --green:#2f7a4f; --green-soft:#e3f3e8;
+    --amber:#b5790b; --amber-soft:#fcefd6;
+    --red:#b23b3b; --red-soft:#fbe4e4;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:0 0 4rem; font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--paper); color:var(--ink); line-height:1.55; }
+  header { padding:3rem 1.5rem 1.5rem; max-width:900px; margin:0 auto; text-align:center; }
+  header h1 { font-size:2rem; margin-bottom:0.3rem; color:var(--navy); }
+  header p { color:var(--muted); max-width:640px; margin:0.4rem auto 0; }
+  main { max-width:900px; margin:0 auto; padding:0 1.5rem; }
+  section { margin-top:2.6rem; }
+  h2 { font-size:1.25rem; border-bottom:2px solid var(--line); padding-bottom:0.4rem; color:var(--navy); }
+  nav.steps { display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:center; margin:1rem 0 1.5rem; }
+  nav.steps button {
+    border:1px solid var(--line); background:white; border-radius:999px; padding:0.35rem 0.9rem;
+    font-size:0.82rem; cursor:pointer; color:var(--muted);
+  }
+  nav.steps button.active { background:var(--navy); color:white; border-color:var(--navy); }
+  .journey-stage { display:none; border:1px solid var(--line); border-radius:10px; background:white; padding:1.3rem 1.5rem; }
+  .journey-stage.active { display:block; }
+  .journey-stage h3 { margin-top:0; color:var(--navy); }
+  .screen-mock {
+    border:1px solid var(--line); border-radius:8px; background:var(--navy-soft);
+    padding:1rem 1.2rem; font-size:0.9rem; margin-top:0.8rem; white-space:pre-wrap;
+    font-family: ui-monospace, Consolas, monospace;
+  }
+  .flag { display:inline-block; font-weight:700; font-size:0.78rem; padding:0.15rem 0.55rem; border-radius:999px; }
+  .flag.confirm { background:var(--green-soft); color:var(--green); }
+  .flag.review { background:var(--amber-soft); color:var(--amber); }
+  .flag.error { background:var(--red-soft); color:var(--red); }
+  .criteria { margin-top:0.8rem; }
+  .criteria li { margin-bottom:0.3rem; }
+  details { border:1px solid var(--line); border-radius:8px; padding:0.7rem 1rem; background:white; margin-bottom:0.6rem; }
+  summary { cursor:pointer; font-weight:600; color:var(--navy); }
+  .states-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media (max-width:680px){ .states-grid{grid-template-columns:1fr;} }
+  .state-card { border:1px solid var(--line); border-radius:8px; padding:0.9rem 1.1rem; background:white; }
+  .state-card h4 { margin:0 0 0.3rem; font-size:0.95rem; }
+  .palette { display:flex; gap:0.8rem; flex-wrap:wrap; margin-top:0.8rem; }
+  .swatch { display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; }
+  .swatch .dot { width:18px; height:18px; border-radius:50%; border:1px solid rgba(0,0,0,0.1); }
+  ul.plain { padding-left:1.2rem; }
+  footer { text-align:center; color:var(--muted); font-size:0.85rem; margin-top:3rem; }
+  code { background:#eef0f2; padding:0.1rem 0.35rem; border-radius:4px; font-size:0.9em; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Verity Assessment Studio</h1>
+  <p>AI proposes marks question by question. The teacher confirms, corrects, and signs off — nothing becomes final without them.</p>
+</header>
+
+<main>
+  <section>
+    <h2>The Core Journey</h2>
+    <p style="color:var(--muted)">Step through the eight stages. Each one is a screen the teacher actually sees.</p>
+    <nav class="steps" id="stepNav"></nav>
+    <div id="journeyStages"></div>
+  </section>
+
+  <section>
+    <h2>Look and Feel</h2>
+    <p>Clean, modern, professional, but approachable — calm and trustworthy. Large cards, clear buttons, minimal text. No complex dashboards.</p>
+    <div class="palette">
+      <div class="swatch"><div class="dot" style="background:#fbfaf7;border-color:#ccc"></div> White / light background</div>
+      <div class="swatch"><div class="dot" style="background:#1f3350"></div> Navy — primary</div>
+      <div class="swatch"><div class="dot" style="background:#2f7a4f"></div> Green — confirmed/correct</div>
+      <div class="swatch"><div class="dot" style="background:#b5790b"></div> Amber — teacher review needed</div>
+      <div class="swatch"><div class="dot" style="background:#b23b3b"></div> Red — errors only</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>States &amp; Boundaries</h2>
+    <div class="states-grid">
+      <div class="state-card"><h4><span class="flag confirm">NORMAL</span> Marking</h4><p>AI proposes with sufficient confidence; teacher confirms or changes.</p></div>
+      <div class="state-card"><h4><span class="flag review">ESCALATED</span> Teacher Review Needed</h4><p>Low confidence; blocks advancing until the teacher confirms or changes the mark.</p></div>
+      <div class="state-card"><h4><span class="flag review">BLOCKED</span> Sign-off with unresolved review</h4><p>"⚠️ 1 question still needs your review." Sign-off stays unavailable until resolved.</p></div>
+      <div class="state-card"><h4><span class="flag error">ERROR</span> Unreadable upload</h4><p>"We couldn't read this file. Please upload a clear PDF or image and try again."</p></div>
+      <div class="state-card"><h4><span class="flag error">ERROR</span> Blank file</h4><p>"No content was found in this file." → Upload Another File.</p></div>
+      <div class="state-card"><h4><span class="flag confirm">FINAL</span> Mark Finalised</h4><p>Locked, labeled reviewed and approved by the educator.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Acceptance Criteria (checkable during build)</h2>
+    <details open>
+      <summary>Question-by-question marking</summary>
+      <ul class="criteria">
+        <li>☐ Each question shows proposed mark, reasoning, and confidence before the teacher acts.</li>
+        <li>☐ Confirming a question advances to the next one automatically.</li>
+      </ul>
+    </details>
+    <details open>
+      <summary>Escalation on low confidence</summary>
+      <ul class="criteria">
+        <li>☐ A low-confidence question is visibly flagged "Teacher Review Needed," not silently proposed.</li>
+        <li>☐ Marking cannot advance past a flagged question until resolved.</li>
+      </ul>
+    </details>
+    <details open>
+      <summary>Sign-off is the only path to final</summary>
+      <ul class="criteria">
+        <li>☐ Sign-off is unavailable while any question is unresolved.</li>
+        <li>☐ After sign-off, the screen clearly states the mark is final and reviewed by the educator.</li>
+      </ul>
+    </details>
+  </section>
+
+  <section>
+    <h2>What We're Building vs. Deferred</h2>
+    <details open>
+      <summary>Building now</summary>
+      <ul class="plain">
+        <li>One memo + one learner script, full click-through to sign-off</li>
+        <li>Visible AI reasoning and confidence per question</li>
+        <li>Teacher override at every question, same controls for normal/escalated</li>
+        <li>Hard block on sign-off while unresolved</li>
+        <li>Graceful handling of unreadable/blank uploads</li>
+      </ul>
+    </details>
+    <details>
+      <summary>Deferred from the PoC</summary>
+      <ul class="plain">
+        <li>Bulk/batch script processing, ADF scanner, QR separators</li>
+        <li>Handwriting OCR</li>
+        <li>Mark-sheet export, class totals, question-level analytics</li>
+        <li>Authentication, multi-teacher, role-based access</li>
+      </ul>
+    </details>
+    <details>
+      <summary>Open questions</summary>
+      <ul class="plain">
+        <li>Exact confidence threshold for escalation — resolved in <code>4-spec</code>/<code>5-build</code></li>
+        <li>Supported file formats for upload — resolved in <code>4-spec</code></li>
+      </ul>
+    </details>
+  </section>
+
+  <footer>Verity Assessment Studio PRD · companion to <code>devpost/prd.md</code> (canonical) · generated for review, not for hosting</footer>
+</main>
+
+<script>
+const stages = [
+  { title:"1. Landing", body:`VERITY ASSESSMENT STUDIO
+AI Marking with the Teacher in Control
+
+Upload a marking memorandum to begin.
+
+[ Upload Memorandum ]
+
+"Verity proposes the marks. The teacher reviews and signs off."` },
+  { title:"2. Check Your Memorandum", body:`Check Your Memorandum
+
+Q1.1  Expected answer: 12      Marks: 2
+Q1.2  Expected answer: x = 5   Marks: 3
+Q1.3  Expected answer: ...     Marks: 2
+
+[ Edit ]   [ Looks Good, Continue ]` },
+  { title:"3. Edit Question", body:`Edit Question
+
+Question: 1.2
+Expected answer: x = 5
+Marks: 3
+
+[ Cancel ]   [ Save Changes ]` },
+  { title:"4. Upload Learner Script", body:`Upload Learner Script
+
+Upload one learner's completed assessment.
+
+[ Choose File ]
+
+→ Learner Script Ready
+  "The memorandum has been confirmed. The script is ready to mark."
+  [ Start AI Marking ]` },
+  { title:"5. Marking (normal)", body:`[ Learner's script ]   |   Question 1.2
+                       |   Learner answer: x = 4
+                       |   AI Proposed Mark: 2 / 3
+                       |   Reason: "Correct method, but the
+                       |   final answer is incorrect."
+                       |   Confidence: 92%
+                       |
+                       |   [ Change Mark ]   [ Confirm ]` },
+  { title:"6. Marking (escalated)", body:`⚠️ Teacher Review Needed
+Confidence: 58%
+
+AI proposed: 1 / 2
+Reason: "The answer may be correct, but part of it is unclear."
+
+[ Change Mark ]   [ Confirm AI Mark ]
+
+Blocks advancing until resolved.` },
+  { title:"7. Marking Complete", body:`Marking Complete
+
+Final Score: 18 / 20
+Percentage: 90%
+
+✅ All questions reviewed
+✅ Any AI suggestions changed by the teacher are included
+
+[ Review Answers ]   [ Sign Off Final Mark ]` },
+  { title:"8. Mark Finalised", body:`✅ Mark Finalised
+
+18 / 20 • 90%
+
+"This mark has been reviewed and approved by the educator.
+The script is now final."` },
+];
+
+const nav = document.getElementById('stepNav');
+const container = document.getElementById('journeyStages');
+stages.forEach((s, i) => {
+  const btn = document.createElement('button');
+  btn.textContent = s.title;
+  btn.onclick = () => showStage(i);
+  nav.appendChild(btn);
+
+  const div = document.createElement('div');
+  div.className = 'journey-stage';
+  div.innerHTML = `<h3>${s.title}</h3><div class="screen-mock">${s.body}</div>`;
+  container.appendChild(div);
+});
+
+function showStage(i) {
+  [...nav.children].forEach((b, idx) => b.classList.toggle('active', idx === i));
+  [...container.children].forEach((d, idx) => d.classList.toggle('active', idx === i));
+}
+showStage(0);
+</script>
+</body>
+</html>

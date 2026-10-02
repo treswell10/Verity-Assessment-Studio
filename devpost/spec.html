@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Verity Assessment Studio — Technical Spec</title>
+<style>
+  :root {
+    --ink:#16202b; --muted:#5b6878; --paper:#fbfaf7; --line:#dfe3e8;
+    --navy:#1f3350; --navy-soft:#e7edf5;
+    --green:#2f7a4f; --green-soft:#e3f3e8;
+    --amber:#b5790b; --amber-soft:#fcefd6;
+    --red:#b23b3b; --red-soft:#fbe4e4;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:0 0 4rem; font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--paper); color:var(--ink); line-height:1.55; }
+  header { padding:3rem 1.5rem 1.5rem; max-width:960px; margin:0 auto; text-align:center; }
+  header h1 { font-size:2rem; margin-bottom:0.3rem; color:var(--navy); }
+  header p { color:var(--muted); max-width:680px; margin:0.4rem auto 0; }
+  main { max-width:960px; margin:0 auto; padding:0 1.5rem; }
+  section { margin-top:2.6rem; }
+  h2 { font-size:1.25rem; border-bottom:2px solid var(--line); padding-bottom:0.4rem; color:var(--navy); }
+  .arch-diagram { display:flex; align-items:center; justify-content:center; gap:0.5rem; flex-wrap:wrap; margin:1.2rem 0; }
+  .arch-box { border:1px solid var(--line); background:white; border-radius:8px; padding:0.9rem 1.1rem; text-align:center; font-size:0.88rem; min-width:140px; }
+  .arch-box.navy { border-color:var(--navy); background:var(--navy-soft); }
+  .arch-box small { color:var(--muted); display:block; margin-top:0.3rem; }
+  .arrow { color:var(--muted); font-size:1.4rem; }
+  .arrow-v { text-align:center; color:var(--muted); font-size:1.3rem; margin:0.1rem 0; }
+
+  nav.steps { display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:center; margin:1rem 0 1.5rem; }
+  nav.steps button { border:1px solid var(--line); background:white; border-radius:999px; padding:0.35rem 0.9rem; font-size:0.8rem; cursor:pointer; color:var(--muted); }
+  nav.steps button.active { background:var(--navy); color:white; border-color:var(--navy); }
+  .journey-stage { display:none; border:1px solid var(--line); border-radius:10px; background:white; padding:1.3rem 1.5rem; }
+  .journey-stage.active { display:block; }
+  .journey-stage h3 { margin-top:0; color:var(--navy); }
+  .journey-stage code { background:var(--navy-soft); padding:0.1rem 0.4rem; border-radius:4px; }
+
+  .comp-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media (max-width:680px){ .comp-grid{grid-template-columns:1fr;} }
+  details { border:1px solid var(--line); border-radius:8px; padding:0.8rem 1rem; background:white; }
+  summary { cursor:pointer; font-weight:600; color:var(--navy); }
+  summary .ref { font-weight:400; color:var(--muted); font-size:0.82rem; }
+
+  table { width:100%; border-collapse:collapse; font-size:0.88rem; margin-top:0.6rem; }
+  th, td { border:1px solid var(--line); padding:0.5rem 0.6rem; text-align:left; vertical-align:top; }
+  th { background:var(--navy-soft); color:var(--navy); }
+
+  .fail-card { border-left:4px solid var(--red); background:var(--red-soft); border-radius:6px; padding:0.8rem 1rem; margin-bottom:0.6rem; }
+  .simplify-card { border-left:4px solid var(--amber); background:var(--amber-soft); border-radius:6px; padding:0.8rem 1rem; margin-bottom:0.6rem; }
+  .palette { display:flex; gap:0.8rem; flex-wrap:wrap; margin-top:0.8rem; }
+  .swatch { display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; }
+  .swatch .dot { width:18px; height:18px; border-radius:50%; border:1px solid rgba(0,0,0,0.1); }
+  pre { background:#1b2430; color:#e7edf5; padding:0.9rem 1rem; border-radius:8px; overflow-x:auto; font-size:0.82rem; }
+  footer { text-align:center; color:var(--muted); font-size:0.85rem; margin-top:3rem; }
+  code { font-family: ui-monospace, Consolas, monospace; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Verity Assessment Studio</h1>
+  <p>Technical blueprint: React + Tailwind frontend, FastAPI + SQLite backend, local Ollama model for structured marking.</p>
+</header>
+
+<main>
+  <section>
+    <h2>Architecture at a Glance</h2>
+    <div class="arch-diagram">
+      <div class="arch-box navy">React + Vite + TS<br><small>Tailwind styling</small></div>
+      <div class="arrow">⇄</div>
+      <div class="arch-box navy">FastAPI<br><small>SQLAlchemy + SQLite</small></div>
+      <div class="arrow">⇄</div>
+      <div class="arch-box navy">Ollama (local)<br><small>qwen2.5:7b-instruct</small></div>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:0.9rem;">Everything runs on one machine. No cloud calls, no external services.</p>
+  </section>
+
+  <section>
+    <h2>The Core Journey Through the System</h2>
+    <p style="color:var(--muted)">Step through what happens at each stage — the UI action, the API call, and what the backend/Ollama do.</p>
+    <nav class="steps" id="stepNav"></nav>
+    <div id="journeyStages"></div>
+  </section>
+
+  <section>
+    <h2>Look and Feel</h2>
+    <div class="palette">
+      <div class="swatch"><div class="dot" style="background:#1f3350"></div> Navy — primary</div>
+      <div class="swatch"><div class="dot" style="background:#2f7a4f"></div> Green — confirmed/correct</div>
+      <div class="swatch"><div class="dot" style="background:#b5790b"></div> Amber — teacher review needed</div>
+      <div class="swatch"><div class="dot" style="background:#b23b3b"></div> Red — errors only</div>
+    </div>
+    <p>Tailwind config encodes this palette directly. Spacious cards, large buttons, plain interface copy — calm, not dense.</p>
+  </section>
+
+  <section>
+    <h2>Components</h2>
+    <div class="comp-grid">
+      <details open><summary>Memo intake and correction <span class="ref">prd.md &gt; Memorandum intake and correction</span></summary>
+        <p><code>routers/memoranda.py</code>, <code>services/extraction.py</code>, <code>services/ollama_client.py</code><br>
+        <code>screens/MemoUpload.tsx</code>, <code>MemoCheck.tsx</code>, <code>EditQuestionModal.tsx</code></p>
+      </details>
+      <details open><summary>Learner script intake <span class="ref">prd.md &gt; Learner script intake</span></summary>
+        <p><code>routers/scripts.py</code><br><code>screens/ScriptUpload.tsx</code>, <code>ScriptReady.tsx</code></p>
+      </details>
+      <details open><summary>Question-by-question marking <span class="ref">prd.md &gt; Question-by-question AI marking</span></summary>
+        <p><code>routers/marking.py</code><br><code>screens/MarkingScreen.tsx</code>, <code>ChangeMarkModal.tsx</code></p>
+      </details>
+      <details open><summary>Completion and sign-off <span class="ref">prd.md &gt; Completion and sign-off</span></summary>
+        <p><code>routers/marking.py</code> (summary, sign-off)<br><code>screens/MarkingComplete.tsx</code>, <code>MarkFinalised.tsx</code></p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Data Model</h2>
+    <table>
+      <tr><th>Entity</th><th>Key fields</th><th>Notes</th></tr>
+      <tr><td>Memorandum</td><td>id, filename, status, created_at</td><td>status: draft → confirmed</td></tr>
+      <tr><td>MemoQuestion</td><td>question_number, expected_answer, max_mark, order</td><td>editable until memo confirmed</td></tr>
+      <tr><td>LearnerScript</td><td>id, memorandum_id, status, final_score, final_percentage, signed_off_at</td><td>status: ready → marking → finalized</td></tr>
+      <tr><td>ScriptAnswer</td><td>question_number, answer_text</td><td>learner's extracted answer per question</td></tr>
+      <tr><td>MarkingResult</td><td>question_number, proposed_mark, reason, confidence, final_mark, status</td><td>status: proposed → confirmed/changed</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Structured Ollama Call (example)</h2>
+    <pre>POST http://localhost:11434/api/chat
+{
+  "model": "qwen2.5:7b-instruct",
+  "messages": [...],
+  "format": { "type": "object", "properties": { "question": {...}, "proposed_mark": {...}, ... } },
+  "stream": false
+}
+
+→ { "question": "1.2", "proposed_mark": 2, "max_mark": 3,
+    "reason": "Correct method, but the final answer is incorrect.",
+    "confidence": 92 }</pre>
+    <p>If parsing fails validation on the backend, that question is auto-flagged "Teacher Review Needed" instead of breaking the screen.</p>
+  </section>
+
+  <section>
+    <h2>Important Failure Modes</h2>
+    <div class="fail-card"><strong>No readable text extracted</strong> → "We couldn't read this file. Please try another file."</div>
+    <div class="fail-card"><strong>Ollama unreachable or returns invalid JSON</strong> → question auto-escalated, confidence 0, reason explains the parse failure.</div>
+    <div class="fail-card"><strong>Sign-off attempted with unresolved questions</strong> → 409, frontend shows which question(s) still need review.</div>
+  </section>
+
+  <section>
+    <h2>What Was Simplified and Why</h2>
+    <div class="simplify-card"><strong>.txt / text-based .pdf only</strong>, no OCR or scanned images — matches the text-only model and scope's deferred handwriting OCR.</div>
+    <div class="simplify-card"><strong>Self-reported model confidence</strong> instead of a calibrated score — simple, and sufficient to drive escalation.</div>
+    <div class="simplify-card"><strong>All marking computed in one backend call</strong>, frontend steps through results — no websockets or background jobs needed.</div>
+    <div class="simplify-card"><strong>No auth, single SQLite file</strong> — single teacher, single sitting, matches deferred multi-user scope.</div>
+  </section>
+
+  <footer>Verity Assessment Studio spec · companion to <code>devpost/spec.md</code> (canonical) · generated for review, not for hosting</footer>
+</main>
+
+<script>
+const stages = [
+  { title:"1. Landing", body:`React app loads. Nothing stored yet.` },
+  { title:"2. Upload Memo", body:`POST /api/memoranda (file)
+→ extract text (.txt direct, .pdf via pypdf)
+→ Ollama: extract structured question list
+→ save Memorandum + MemoQuestion rows
+→ return to frontend for Check Your Memorandum` },
+  { title:"3. Check/Edit Memo", body:`PATCH /api/memoranda/{id}/questions/{qid}  — edit one question
+PATCH /api/memoranda/{id}                 — confirm memo (status: confirmed)` },
+  { title:"4. Upload Script", body:`POST /api/scripts (file, memorandum_id)
+→ extract text
+→ Ollama: split into per-question ScriptAnswer rows
+→ frontend shows Learner Script Ready` },
+  { title:"5. Start Marking", body:`POST /api/scripts/{id}/mark
+→ backend loops every memo question once
+→ Ollama: per-question structured mark + reason + confidence
+→ saves one MarkingResult per question (status: proposed)
+→ all computed before frontend steps through them` },
+  { title:"6. Marking Screen", body:`Frontend fetches MarkingResult list, steps through one at a time.
+PATCH /api/scripts/{id}/results/{question}
+  → status: confirmed (Confirm) or changed (Change Mark / Confirm AI Mark)` },
+  { title:"7. Marking Complete", body:`GET /api/scripts/{id}/summary
+→ totals confirmed/changed marks
+→ reports any still "proposed" (unresolved)` },
+  { title:"8. Sign Off", body:`POST /api/scripts/{id}/sign-off
+→ 409 if any MarkingResult still "proposed"
+→ else: script.status = finalized, final_score set
+→ frontend shows Mark Finalised` },
+];
+
+const nav = document.getElementById('stepNav');
+const container = document.getElementById('journeyStages');
+stages.forEach((s, i) => {
+  const btn = document.createElement('button');
+  btn.textContent = s.title;
+  btn.onclick = () => showStage(i);
+  nav.appendChild(btn);
+
+  const div = document.createElement('div');
+  div.className = 'journey-stage';
+  div.innerHTML = `<h3>${s.title}</h3><pre style="background:var(--navy-soft);color:var(--ink);">${s.body}</pre>`;
+  container.appendChild(div);
+});
+
+function showStage(i) {
+  [...nav.children].forEach((b, idx) => b.classList.toggle('active', idx === i));
+  [...container.children].forEach((d, idx) => d.classList.toggle('active', idx === i));
+}
+showStage(0);
+</script>
+</body>
+</html>

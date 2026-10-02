@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Verity — Scope</title>
+<style>
+  :root {
+    --ink: #1b2430;
+    --muted: #5b6878;
+    --paper: #fbfaf7;
+    --line: #dfe3e8;
+    --accent: #2f6f5e;
+    --accent-soft: #e4f1ec;
+    --warn: #b5651d;
+    --warn-soft: #fbead9;
+    --cut: #8a8f98;
+    --cut-soft: #eceef0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0 0 4rem;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--paper); color: var(--ink); line-height: 1.55;
+  }
+  header {
+    padding: 3rem 1.5rem 2rem; max-width: 880px; margin: 0 auto; text-align: center;
+  }
+  header h1 { font-size: 2.1rem; margin-bottom: 0.3rem; }
+  header p.tagline { color: var(--muted); font-size: 1.05rem; max-width: 620px; margin: 0.5rem auto 0; }
+  main { max-width: 880px; margin: 0 auto; padding: 0 1.5rem; }
+  section { margin-top: 2.6rem; }
+  h2 { font-size: 1.3rem; border-bottom: 2px solid var(--line); padding-bottom: 0.4rem; }
+  .kernel {
+    background: var(--accent-soft); border-left: 4px solid var(--accent);
+    padding: 1.1rem 1.3rem; border-radius: 6px; font-size: 1.05rem;
+  }
+  .who-why { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media (max-width: 680px) { .who-why { grid-template-columns: 1fr; } }
+  .card {
+    background: white; border: 1px solid var(--line); border-radius: 8px;
+    padding: 1.1rem 1.3rem;
+  }
+
+  /* Diagram */
+  .diagram { display: flex; flex-direction: column; align-items: center; gap: 0; margin: 1.5rem 0; }
+  .d-row { display: flex; align-items: center; gap: 0.6rem; width: 100%; justify-content: center; flex-wrap: wrap; }
+  .d-box {
+    border-radius: 8px; padding: 0.7rem 1rem; font-size: 0.92rem; text-align: center; min-width: 150px;
+    border: 1px solid var(--line); background: white;
+  }
+  .d-box.ai { border-color: var(--accent); background: var(--accent-soft); }
+  .d-box.human { border-color: var(--warn); background: var(--warn-soft); }
+  .d-arrow { color: var(--muted); font-size: 1.3rem; }
+  .d-arrow-down { color: var(--muted); font-size: 1.3rem; margin: 0.15rem 0; }
+  .escalate-branch {
+    display: flex; gap: 1.2rem; align-items: flex-start; justify-content: center; margin: 0.4rem 0; flex-wrap: wrap;
+  }
+  .branch-label { font-size: 0.78rem; color: var(--muted); text-align: center; margin-bottom: 0.2rem; }
+
+  /* Reveals */
+  .reveal-group { display: flex; flex-direction: column; gap: 0.6rem; }
+  details {
+    border: 1px solid var(--line); border-radius: 8px; padding: 0.7rem 1rem; background: white;
+  }
+  details[open] { background: #fff; }
+  summary { cursor: pointer; font-weight: 600; outline: none; }
+  summary::marker { color: var(--accent); }
+  .tag {
+    display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em;
+    padding: 0.15rem 0.5rem; border-radius: 999px; margin-left: 0.5rem; vertical-align: middle;
+  }
+  .tag.now { background: var(--accent-soft); color: var(--accent); }
+  .tag.later { background: var(--warn-soft); color: var(--warn); }
+  .tag.cut { background: var(--cut-soft); color: var(--cut); }
+  ul { margin: 0.5rem 0 0; padding-left: 1.3rem; }
+  li { margin-bottom: 0.35rem; }
+  .moment {
+    background: #fff8e1; border: 1px dashed #d9b84a; border-radius: 8px;
+    padding: 1rem 1.2rem; font-size: 0.97rem;
+  }
+  footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 3rem; }
+  code { background: #eef0f2; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.9em; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Verity</h1>
+  <p class="tagline">AI-Assisted Marking with the Educator in the Loop — a proof of concept that gives teaching time back without taking the final decision away from the teacher.</p>
+</header>
+
+<main>
+
+  <section>
+    <h2>The Unique Kernel</h2>
+    <div class="kernel">
+      AI proposes a mark and explains its reasoning for every question. When it's uncertain, it escalates to the teacher instead of guessing. The teacher reviews, confirms or overrides, and signs off. <strong>No mark reaches a learner on the software's authority alone.</strong>
+    </div>
+  </section>
+
+  <section>
+    <h2>Who &amp; Why</h2>
+    <div class="who-why">
+      <div class="card">
+        <strong>Who it's for</strong>
+        <p>An ordinary South African public school teacher — picture a Mathematics teacher in Gauteng, Limpopo, Mpumalanga, the Eastern Cape, or KwaZulu-Natal — with a school laptop and a stack of scripts to mark after a long teaching day. Today, every script is marked from scratch, by hand.</p>
+      </div>
+      <div class="card">
+        <strong>Why it matters</strong>
+        <p>These are children's school scripts, not anonymous documents. Professional judgment stays decisive wherever context matters — and the educator remains accountable for every final mark.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The Core Loop</h2>
+    <div class="diagram">
+      <div class="d-row">
+        <div class="d-box">Teacher uploads memo</div>
+        <div class="d-arrow">→</div>
+        <div class="d-box">Teacher uploads one script</div>
+      </div>
+      <div class="d-arrow-down">↓</div>
+      <div class="d-row">
+        <div class="d-box ai">Verity proposes mark + reason<br><small>question by question</small></div>
+      </div>
+      <div class="d-arrow-down">↓</div>
+      <div class="escalate-branch">
+        <div>
+          <div class="branch-label">confident</div>
+          <div class="d-box ai">Proposed mark shown</div>
+        </div>
+        <div>
+          <div class="branch-label">uncertain / ambiguous</div>
+          <div class="d-box human">Flagged for teacher</div>
+        </div>
+      </div>
+      <div class="d-arrow-down">↓</div>
+      <div class="d-row">
+        <div class="d-box human">Teacher confirms, overrides, or awards partial credit</div>
+      </div>
+      <div class="d-arrow-down">↓</div>
+      <div class="d-row">
+        <div class="d-box human" style="border-color:var(--accent); background:var(--accent-soft);">Teacher signs off → mark is final</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What "Working" Looks Like</h2>
+    <div class="moment">
+      <strong>The "oh, that's cool" beat:</strong> Demo in under a minute — upload a memo, upload a script, watch Verity mark Q1.1 and Q1.2 with ticks, marks, and reasons, then recognize a valid alternative method or a carried-forward error and propose partial credit. Then it hits an ambiguous answer and <em>flags it for the teacher instead of guessing</em>. The teacher reviews, signs off, and the mark locks in.
+    </div>
+  </section>
+
+  <section>
+    <h2>Scope Boundary</h2>
+    <div class="reveal-group">
+      <details open>
+        <summary>In this PoC <span class="tag now">NOW</span></summary>
+        <ul>
+          <li>Memo upload with question numbers, expected answers, mark allocations</li>
+          <li>One learner script, pre-scanned or typed — clear, readable answers (no handwriting OCR)</li>
+          <li>Question-by-question marking: proposed mark + short reasoning</li>
+          <li>Confidence-based escalation: ambiguous answers flagged, not auto-marked</li>
+          <li>Teacher review: confirm, override, or award partial/half marks</li>
+          <li>Sign-off step that finalizes the mark</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Worth doing later <span class="tag later">LATER</span></summary>
+        <ul>
+          <li>Live ADF scanner integration, QR separator sheets, bulk batch processing of a full class</li>
+          <li>Handwriting OCR</li>
+          <li>Mark totals/percentages, mark-sheet export, question-level analytics for intervention</li>
+          <li>Dashboards, role-based access, audit trails, on-prem deployment, data retention rules</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Explicitly cut <span class="tag cut">CUT</span></summary>
+        <ul>
+          <li>Multi-teacher / department workflows — single teacher, single script for this PoC</li>
+          <li>Report generation and NSC achievement-level export — belongs to the later analytics story</li>
+          <li>Any real infrastructure/deployment concerns — a hackathon PoC runs locally</li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <footer>
+    Verity scope · companion to <code>devpost/scope.md</code> (canonical) · generated for review, not for hosting
+  </footer>
+
+</main>
+</body>
+</html>

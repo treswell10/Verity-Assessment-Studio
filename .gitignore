@@ -1,0 +1,14 @@
+/devpost/learner-profile.md
+.env
+.env.*
+!.env.example
+
+# Python
+backend/.venv/
+backend/verity.db
+__pycache__/
+*.pyc
+
+# Node
+frontend/node_modules/
+frontend/dist/
