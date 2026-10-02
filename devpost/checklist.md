@@ -43,7 +43,7 @@ Build mode: fast
   Learner check: Upload a learner script and confirm you land on "Learner Script Ready."
   Commit: `Add learner script upload and answer splitting`
 
-- [ ] **4. Question-by-question AI marking with escalation**
+- [x] **4. Question-by-question AI marking with escalation**
   Becomes usable: The teacher triggers "Start AI Marking" and steps through each question with a proposed mark, reasoning, and confidence — confirming, overriding, and hitting the escalation block on low-confidence questions.
   Why now: This is the unique kernel — AI proposes, flags uncertainty, teacher decides. It belongs as early as the memo and script data make it possible, not saved for last.
   PRD ref: `prd.md > Question-by-question AI marking` (full section), `prd.md > Screens and Layout` (Marking screen, Change Mark, Teacher Review Needed)
