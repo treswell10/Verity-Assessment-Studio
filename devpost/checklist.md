@@ -53,7 +53,7 @@ Build mode: fast
   Learner check: Start AI marking on your script, confirm one normal question, then resolve a flagged "Teacher Review Needed" question.
   Commit: `Add AI marking loop with confidence-based escalation`
 
-- [ ] **5. Completion, sign-off, and the finalized mark**
+- [x] **5. Completion, sign-off, and the finalized mark**
   Becomes usable: The full journey runs end to end — Marking Complete, a hard sign-off block while anything is unresolved, and the Mark Finalised screen.
   Why now: Closes the loop the kernel promises — no mark is final without explicit teacher sign-off — and is the last piece needed for a complete demo run.
   PRD ref: `prd.md > Completion and sign-off`, `prd.md > Screens and Layout` (Marking Complete, Mark Finalised), `prd.md > States and Boundaries` (Unresolved review blocks sign-off, Finalized state)
