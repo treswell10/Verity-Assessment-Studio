@@ -76,22 +76,22 @@ Build mode: fast
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after Slice 1 (memo upload + AI extraction, the flagged risk). Learner confirmed extraction worked; noted no "continue" yet, which is correctly slice 2's scope.
-- [ ] Final kick-the-tires exploration and feedback completed — after Slice 6
+- [x] Final kick-the-tires exploration and feedback completed — after Slice 6. Learner ran the full journey and said "i like the poc" — no changes requested.
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: [what actually happened; real document/test/code references; unfinished work if interrupted]
-Route and stops: [actual paths and symbols; guided stops completed, or reference-only route]
-Edit outcome: [tried/kept/reverted/declined/not applicable; verification if changed]
-Reflection: [offered/answered/declined/already covered — personal answer belongs only in the ignored profile]
-Activity mode: [live app and editor, explicit static fallback, focused alternative, prior practice, or recap]
+Activity and evidence: Focused alternative (experienced plan-first learner) — traced the real "Start AI Marking does nothing" report from slice 4: checked the uvicorn request log, found no `POST /api/scripts/{id}/mark` had arrived, which ruled out a backend crash and pointed to a missing frontend loading state (fixed in `ScriptReady.tsx`).
+Route and stops: Start AI Marking button (`frontend/src/screens/ScriptReady.tsx`) → `startMarking()` (`frontend/src/api/client.ts`) → `start_marking()` (`backend/app/routers/marking.py`, calling `mark_answer()` in `ollama_client.py`) → rendered in `MarkingScreen.tsx` with confidence-based escalation styling.
+Edit outcome: Not applicable — no incidental edit offered this round; the real bug fix from slice 4 served as the concrete example instead.
+Reflection: Offered the optional transfer question; learner answered "know all my requirements" (their planning approach is already solid going in).
+Activity mode: Live app and editor, using an actual debugging moment from the build.
 
 ## Revisions
