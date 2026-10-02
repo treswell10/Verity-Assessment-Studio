@@ -63,7 +63,7 @@ Build mode: fast
   Learner check: Run the whole journey on your sample memo/script, including hitting the sign-off block once, then successfully signing off.
   Commit: `Add marking summary, sign-off gate, and finalized screen`
 
-- [ ] **6. Graceful handling of unreadable or blank uploads**
+- [x] **6. Graceful handling of unreadable or blank uploads**
   Becomes usable: Uploading a blank or unreadable file at either upload point shows a plain-language message instead of a crash, and the app stays usable afterward.
   Why now: The last state the PRD specifies that nothing earlier exercises; cheap to add now that both upload paths exist, and worth proving before the demo relies on clean files only.
   PRD ref: `prd.md > States and Boundaries` (Invalid/unreadable upload, Blank/empty file)
