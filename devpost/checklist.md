@@ -13,7 +13,7 @@ Build mode: fast
 
 ## Slices
 
-- [ ] **1. Upload a memorandum and see what Verity extracted**
+- [x] **1. Upload a memorandum and see what Verity extracted**
   Becomes usable: A running app (backend + frontend scaffolded) where the teacher uploads a memo file and sees the AI-extracted question list (question number, expected answer, marks) on screen. Nothing is editable or confirmed yet.
   Why now: Bootstraps the whole stack in one slice, and immediately proves the spec's flagged risk — whether `qwen2.5:7b-instruct` reliably returns structured JSON for memo extraction — before anything else is built on top of it.
   PRD ref: `prd.md > The Core Journey` (steps 1-2), `prd.md > Screens and Layout` (Landing screen, partial Check Your Memorandum)
@@ -75,7 +75,7 @@ Build mode: fast
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after Slice 1 (memo upload + AI extraction, the flagged risk)
+- [x] Early usable behavior explored — after Slice 1 (memo upload + AI extraction, the flagged risk). Learner confirmed extraction worked; noted no "continue" yet, which is correctly slice 2's scope.
 - [ ] Final kick-the-tires exploration and feedback completed — after Slice 6
 
 ## Final Review
