@@ -11,6 +11,7 @@ interface MarkingScreenProps {
   scriptId: number;
   results: MarkingResult[];
   answers: ScriptAnswer[];
+  focusQuestion?: string;
   onAllReviewed: (results: MarkingResult[]) => void;
 }
 
@@ -18,10 +19,17 @@ export default function MarkingScreen({
   scriptId,
   results: initialResults,
   answers,
+  focusQuestion,
   onAllReviewed,
 }: MarkingScreenProps) {
   const [results, setResults] = useState(initialResults);
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(() => {
+    if (focusQuestion) {
+      const found = initialResults.findIndex((r) => r.question_number === focusQuestion);
+      if (found >= 0) return found;
+    }
+    return 0;
+  });
   const [showChangeMark, setShowChangeMark] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,10 +42,13 @@ export default function MarkingScreen({
   function advance(updated: MarkingResult) {
     const next = results.map((r) => (r.question_number === updated.question_number ? updated : r));
     setResults(next);
-    if (index + 1 < results.length) {
+    const stillUnresolved = next.findIndex((r) => r.status === "proposed");
+    if (stillUnresolved === -1) {
+      onAllReviewed(next);
+    } else if (index + 1 < next.length && next[index + 1].status === "proposed") {
       setIndex(index + 1);
     } else {
-      onAllReviewed(next);
+      setIndex(stillUnresolved);
     }
   }
 

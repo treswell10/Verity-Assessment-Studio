@@ -1,13 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Landing from "./screens/Landing";
 import MemoUpload from "./screens/MemoUpload";
 import MemoCheck from "./screens/MemoCheck";
 import ScriptUpload from "./screens/ScriptUpload";
 import ScriptReady from "./screens/ScriptReady";
 import MarkingScreen from "./screens/MarkingScreen";
-import { startMarking, type LearnerScript, type MarkingResult, type Memorandum } from "./api/client";
+import MarkingComplete from "./screens/MarkingComplete";
+import MarkFinalised from "./screens/MarkFinalised";
+import {
+  startMarking,
+  getSummary,
+  type LearnerScript,
+  type MarkingResult,
+  type Memorandum,
+  type ScriptSummary,
+  type SignOffResult,
+} from "./api/client";
 
-type Step = "landing" | "upload" | "check" | "scriptUpload" | "scriptReady" | "marking" | "reviewed";
+type Step =
+  | "landing"
+  | "upload"
+  | "check"
+  | "scriptUpload"
+  | "scriptReady"
+  | "marking"
+  | "complete"
+  | "finalised";
 
 function App() {
   const [step, setStep] = useState<Step>("landing");
@@ -15,6 +33,15 @@ function App() {
   const [script, setScript] = useState<LearnerScript | null>(null);
   const [results, setResults] = useState<MarkingResult[]>([]);
   const [startError, setStartError] = useState<string | null>(null);
+  const [focusQuestion, setFocusQuestion] = useState<string | undefined>(undefined);
+  const [summary, setSummary] = useState<ScriptSummary | null>(null);
+  const [finalResult, setFinalResult] = useState<SignOffResult | null>(null);
+
+  useEffect(() => {
+    if (step === "complete" && script) {
+      getSummary(script.id).then(setSummary);
+    }
+  }, [step, script]);
 
   if (step === "landing") {
     return <Landing onUploadClick={() => setStep("upload")} />;
@@ -77,26 +104,34 @@ function App() {
           scriptId={script.id}
           results={results}
           answers={script.answers}
+          focusQuestion={focusQuestion}
           onAllReviewed={(r) => {
             setResults(r);
-            setStep("reviewed");
+            setFocusQuestion(undefined);
+            setStep("complete");
           }}
         />
       </div>
     );
   }
-  if (step === "reviewed") {
-    // Marking Complete and Sign Off arrive in the next build slice.
+  if (step === "complete" && script && summary) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="bg-white rounded-2xl shadow-md p-10 max-w-lg w-full text-center space-y-3">
-          <h2 className="text-xl font-semibold text-navy">All Questions Reviewed</h2>
-          <p className="text-gray-500 text-sm">
-            Marking Complete and Sign Off come next.
-          </p>
-        </div>
-      </div>
+      <MarkingComplete
+        scriptId={script.id}
+        summary={summary}
+        onReviewQuestion={(questionNumber) => {
+          setFocusQuestion(questionNumber);
+          setStep("marking");
+        }}
+        onSignedOff={(result) => {
+          setFinalResult(result);
+          setStep("finalised");
+        }}
+      />
     );
+  }
+  if (step === "finalised" && finalResult) {
+    return <MarkFinalised result={finalResult} />;
   }
   return null;
 }

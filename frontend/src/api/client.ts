@@ -126,3 +126,41 @@ export async function updateMarkingResult(
   );
   return handle<MarkingResult>(response);
 }
+
+export interface ScriptSummary {
+  final_score: number;
+  max_score: number;
+  final_percentage: number;
+  all_reviewed: boolean;
+  unresolved_questions: string[];
+}
+
+export async function getSummary(scriptId: number): Promise<ScriptSummary> {
+  const response = await fetch(`${API_BASE}/api/scripts/${scriptId}/summary`);
+  return handle<ScriptSummary>(response);
+}
+
+export interface SignOffResult {
+  status: string;
+  final_score: number;
+  final_percentage: number;
+  signed_off_at: string;
+}
+
+export interface SignOffBlocked {
+  message: string;
+  unresolved_questions: string[];
+}
+
+export async function signOffScript(scriptId: number): Promise<SignOffResult> {
+  const response = await fetch(`${API_BASE}/api/scripts/${scriptId}/sign-off`, {
+    method: "POST",
+  });
+  if (response.status === 409) {
+    const body = (await response.json()) as { detail: SignOffBlocked };
+    const err = new Error(body.detail.message) as Error & { unresolved_questions?: string[] };
+    err.unresolved_questions = body.detail.unresolved_questions;
+    throw err;
+  }
+  return handle<SignOffResult>(response);
+}
