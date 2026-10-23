@@ -22,18 +22,22 @@ Implements `prd.md > The Core Journey`.
 1. **Landing** — the React app loads; nothing is stored yet.
 2. **Upload Memorandum** → frontend sends the file to the backend (`POST /api/memoranda`). The backend extracts raw text (direct read for `.txt`, `pypdf` extraction for `.pdf`), then asks Ollama to return the memo as structured JSON (a list of `{question, expected_answer, max_mark}`). The backend saves a `Memorandum` and its `MemoQuestion` rows in SQLite, and returns them to the frontend.
 3. **Check Your Memorandum** — frontend renders the returned questions. **Edit Question** sends `PATCH /api/memoranda/{id}/questions/{qid}` to update one row. **Looks Good, Continue** sends `PATCH /api/memoranda/{id}` to mark the memo confirmed.
-4. **Upload Learner Script** → frontend sends the file (`POST /api/scripts`, linked to the confirmed memorandum). The backend extracts its text the same way, then asks Ollama to split it into per-question answers matching the memo's question numbers, and stores `ScriptAnswer` rows. The frontend shows **Learner Script Ready**.
+4. **Upload Learner Scripts (Single or Bulk)** → frontend sends each selected file (`POST /api/scripts`, linked to the confirmed memorandum). The backend extracts its text the same way, then asks Ollama to split it into per-question answers matching the memo's question numbers, and stores `ScriptAnswer` rows. The frontend queues the uploaded scripts and shows **Learner Script Ready** with batch progress (`Script 1 of N`).
 5. **Start AI Marking** → frontend calls `POST /api/scripts/{id}/mark`. The backend loops through every memo question once, calling Ollama for each with the memo's expected answer + the learner's answer, and stores one `MarkingResult` row per question (`proposed_mark`, `reason`, `confidence`, `status: "proposed"`). This all happens in one backend call — the frontend doesn't talk to Ollama directly, and there's no live streaming.
-6. **Marking screen** — frontend fetches the full list of `MarkingResult`s and steps through them one at a time, exactly as your PRD describes. **Confirm** or **Change Mark** / **Confirm AI Mark** send `PATCH /api/scripts/{id}/results/{question}` with the final mark, setting `status` to `"confirmed"` or `"changed"`.
+6. **Marking screen (Side-by-Side Comparison)** — frontend renders a top question navigator bar (`Q1`, `Q2`, …) and steps through the `MarkingResult`s one at a time. The left pane displays the **Memorandum (Expected Answer)** and the **Learner's Answer** side-by-side; the right pane displays the **Suggested Mark**, visual confidence bar, and plain-English explanation. **Confirm** or **Change Mark** / **Confirm AI Mark** send `PATCH /api/scripts/{id}/results/{question}` with the final mark, setting `status` to `"confirmed"` or `"changed"`.
 7. **Marking Complete** — frontend calls `GET /api/scripts/{id}/summary`, which totals the confirmed/changed marks and reports whether any question is still `"proposed"` (unresolved).
-8. **Sign Off** → `POST /api/scripts/{id}/sign-off`. The backend rejects this (409) if any `MarkingResult` is still `"proposed"` — same rule as the PRD's blocked sign-off state. Otherwise it sets the script to `"finalized"` with the final score and timestamp, and the frontend shows **Mark Finalised**.
+8. **Sign Off, Marksheet Export & Learner Report** → `POST /api/scripts/{id}/sign-off`. The backend rejects this (409) if any `MarkingResult` is still `"proposed"` — same rule as the PRD's blocked sign-off state. Otherwise it sets the script to `"finalized"` with the final score and timestamp, and the frontend shows **Mark Finalised**, fetches the live **Class Marksheet** (`GET /api/scripts/memorandum/{memorandum_id}/marksheet`), and enables:
+   - **Modern Excel Marksheet export** (`GET /api/scripts/memorandum/{memorandum_id}/marksheet.xlsx` built with `openpyxl`, plus `.csv` at `/marksheet.csv`)
+   - **Marked Script Report download** (`GET /api/scripts/{script_id}/download-report`) — a printable HTML/PDF report for the learner
+   - **Bulk Queue continuation** — advancing directly to the next uploaded script in the batch.
 
 ## Stack
 
-- **Frontend:** React 18 + Vite + TypeScript + Tailwind CSS. [Vite docs](https://vitejs.dev/guide/) · [Tailwind + Vite guide](https://tailwindcss.com/docs/guides/vite) · [React docs](https://react.dev/)
+- **Frontend:** React 18 + Vite + TypeScript + Tailwind CSS (`Plus Jakarta Sans` & `Inter` typography). [Vite docs](https://vitejs.dev/guide/) · [Tailwind + Vite guide](https://tailwindcss.com/docs/guides/vite) · [React docs](https://react.dev/)
 - **Backend:** FastAPI + SQLAlchemy + SQLite. [FastAPI docs](https://fastapi.tiangolo.com/) · [SQLAlchemy docs](https://docs.sqlalchemy.org/)
 - **PDF text extraction:** `pypdf` (pure-Python, no system dependencies — good fit for a local PoC). [pypdf docs](https://pypdf.readthedocs.io/)
-- **AI:** Ollama running locally, model `qwen2.5:7b-instruct`, called via its `/api/chat` endpoint with a JSON Schema `format` for structured output. [Ollama API docs](https://github.com/ollama/ollama/blob/main/docs/api.md) · [Ollama structured outputs](https://ollama.com/blog/structured-outputs)
+- **Excel Marksheet generation:** `openpyxl` for generating styled `.xlsx` workbooks with navy title banners, per-question headers, conditional pass/review color fills, and a calculated Class Average row.
+- **AI:** Ollama running locally/on-prem, model `qwen2.5:7b-instruct`, called via its `/api/chat` endpoint with `"format": "json"`, explicit schema keys in the system prompt, low temperature (`0.1`), and `httpx.Client(trust_env=False)` so local/intranet Ollama hosts bypass corporate HTTP proxies cleanly. [Ollama API docs](https://github.com/ollama/ollama/blob/main/docs/api.md)
 
 Rationale: this is the learner's established stack, chosen for familiarity and because it keeps the "runs locally, no cloud dependency" principle real rather than aspirational. Tradeoff accepted: `qwen2.5:7b-instruct` is text-only, so input is limited to `.txt` and text-based `.pdf` (see **What Was Simplified and Why**).
 
@@ -75,9 +79,9 @@ Implements `prd.md > Question-by-question AI marking`.
 - Backend: `routers/marking.py` (start marking, per-question Ollama calls, confirm/change endpoint).
 - Frontend: `screens/MarkingScreen.tsx`, `screens/ChangeMarkModal.tsx`.
 
-### Completion and sign-off
-Implements `prd.md > Completion and sign-off`.
-- Backend: `routers/marking.py` (summary, sign-off with the unresolved-question block).
+### Completion, sign-off, Excel marksheet & learner report export
+Implements `prd.md > Completion, sign-off, Excel marksheet & learner report export`.
+- Backend: `routers/marking.py` (summary, sign-off with the unresolved-question block, `/memorandum/{id}/marksheet`, `/memorandum/{id}/marksheet.xlsx`, `/memorandum/{id}/marksheet.csv`, and `/{script_id}/download-report`).
 - Frontend: `screens/MarkingComplete.tsx`, `screens/MarkFinalised.tsx`.
 
 ## Data Model

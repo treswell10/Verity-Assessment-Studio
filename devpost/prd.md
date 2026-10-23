@@ -14,29 +14,32 @@ Source: `scope.md > The Core Loop`, `scope.md > The Unique Kernel`.
 
 ## The Core Journey
 
-1. **Landing** — the teacher opens Verity Assessment Studio and sees the "Upload Memorandum" entry point.
-2. **Upload memorandum** — the teacher selects the memo file. Verity extracts question numbers, expected answers, and marks.
-3. **Check your memorandum** — the teacher reviews the extracted standard, edits any question that's wrong, and continues once it's correct.
-4. **Upload learner script** — the teacher uploads one learner's completed assessment. Verity confirms it's ready.
+1. **Landing** — the teacher opens Verity Assessment Studio and sees the clean, friendly "Upload Memorandum" entry point.
+2. **Upload memorandum** — the teacher selects or drags-and-drops the memo file (`.pdf` or `.txt`). Verity extracts question numbers, expected answers, and marks.
+3. **Check your memorandum** — the teacher reviews the extracted questions alongside total marks and question counts, edits any question that needs fixing, and continues once it's right.
+4. **Upload learner scripts (single or bulk)** — the teacher uploads one learner's completed assessment or selects a batch of scripts in bulk. Verity splits each script into per-question answers and queues them for marking.
 5. **Start AI marking** — the teacher explicitly triggers marking; nothing happens automatically on upload.
-6. **Question-by-question marking** — Verity shows the learner's answer alongside a proposed mark, reasoning, and confidence, one question at a time. The teacher confirms or changes each mark. Low-confidence questions are flagged and block progress until resolved.
-7. **Marking complete** — once every question is confirmed or changed, Verity shows the final score and a checklist confirming all questions were reviewed.
-8. **Sign off** — the teacher signs off the final mark. Only after sign-off is the mark locked and labeled finalized.
+6. **Question-by-question marking** — Verity shows a top question navigator bar and a side-by-side comparison of the **Memorandum (Expected Answer)** and the **Learner's Answer** on the left, alongside the **Suggested Mark**, plain-English explanation ("Why Verity suggested this mark"), and confidence bar on the right. The teacher confirms or changes each mark. Low-confidence questions are flagged and block progress until resolved.
+7. **Marking complete** — once every question is confirmed or changed, Verity shows the final score, percentage, and a checklist confirming all questions were reviewed.
+8. **Sign off, Class Marksheet & Learner Reports** — the teacher signs off the final mark. Only after sign-off is the mark locked and added to the live **Class Marksheet**. From the finalised screen, the teacher can download a printable **Marked Script Report** to send to the learner, export a **Modern Excel Marksheet (`.xlsx`)** or `.csv`, or proceed directly to the next queued script in a bulk batch.
 
 This is the spine of the proof of concept — every section below elaborates one of these steps.
 
 ## Screens and Layout
 
-- **Landing screen** — title "VERITY ASSESSMENT STUDIO," subheading "AI Marking with the Teacher in Control," a prompt to upload a marking memorandum, and an "Upload Memorandum" button. A one-line reassurance: "Verity proposes the marks. The teacher reviews and signs off."
-- **Check Your Memorandum** — a list of extracted questions, each showing question number, expected answer, and marks. Each question has an "Edit" affordance; the screen has "Edit" and "Looks Good, Continue" actions.
-- **Edit Question** (modal/sub-screen) — three editable fields: question number, expected answer, marks. "Cancel" and "Save Changes" actions; saving returns to Check Your Memorandum with the correction applied.
-- **Upload Learner Script** — a single file upload ("Choose File") with the prompt "Upload one learner's completed assessment."
-- **Learner Script Ready** — confirms the memo is set and the script is ready, with a single "Start AI Marking" action.
-- **Marking screen** (main demo screen) — two-pane layout: the learner's script/answer on the left, the current question's AI proposal on the right (question number, learner answer, proposed mark, reasoning, confidence). Actions: "Change Mark" and "Confirm." Advances automatically to the next question after confirmation.
-- **Change Mark** (modal) — shows the AI-proposed mark and an editable teacher mark field. "Cancel" and "Save & Continue" actions. Used both for a normal override and for resolving an escalated question (no explanation required).
-- **Teacher Review Needed** (escalation state on the marking screen) — same layout as a normal question, but visually flagged with a warning indicator and confidence shown. Actions: "Change Mark" and "Confirm AI Mark." Blocks advancing until resolved.
-- **Marking Complete** — final score and percentage, a checklist ("All questions reviewed," "Any AI suggestions changed by the teacher are included"), and two actions: "Review Answers" and "Sign Off Final Mark."
-- **Mark Finalised** — confirms the score is locked: score, percentage, and the statement "This mark has been reviewed and approved by the educator. The script is now final."
+- **Persistent Workflow Header** — displayed on every screen after Landing, showing the 5 plain-English steps: `1. Upload Memo` → `2. Check Memo` → `3. Upload Script` → `4. Review Marks` → `5. Final Sign-Off`.
+- **Landing screen** — badge "AI Marking Assistant for Teachers", title "Verity Assessment Studio," subheading "AI Marking with the Teacher in Control," plain-English reassurance ("Verity suggests the marks and explains why. You check each answer, change any mark you want, and approve the final score."), and an "Upload Memorandum →" button.
+- **Check Your Memorandum** — header with Total Marks and Questions counters, plus a list of extracted questions each showing question badge (`Q1`), mark allocation, expected answer, and an "Edit" button, followed by "Looks Good, Continue →".
+- **Edit Question** (modal) — three editable fields: question number, expected answer, marks. "Cancel" and "Save Changes" actions; saving returns to Check Your Memorandum with the correction applied.
+- **Upload Learner Scripts** — drag-and-drop or file picker supporting single or multiple (`.pdf` / `.txt`) learner scripts in bulk, with live per-file progress ("Reading script 1 of N…").
+- **Learner Script Ready** — confirms the script is ready with extracted answer count, shows the batch queue status (`✓ Done`, `Up Next`, `Queued`) when uploading in bulk, and provides a single "Start AI Marking →" action.
+- **Marking screen** (main review screen) — top question pill bar (`Q1`, `Q2`, … with `✓` and `!` badges and "Reviewed X of Y questions" counter) above a two-pane layout:
+  - **Left pane (Question Comparison):** displays **Memorandum (Expected Answer)** and **Learner's Answer** side-by-side so the teacher can compare them directly without leaving the screen.
+  - **Right pane (Suggested Mark):** displays Proposed Mark, visual confidence meter bar, and "Why Verity suggested this mark." Actions: "Change Mark" and "Confirm." Advances automatically to the next question after confirmation.
+- **Change Mark** (modal) — shows the AI-proposed mark and an editable teacher mark field (supports half-marks). "Cancel" and "Save & Continue" actions.
+- **Teacher Review Needed** (escalation state on the marking screen) — same layout as a normal question, but visually highlighted in amber with a "⚠️ Teacher Review Needed" badge when confidence is below 70%. Actions: "Change Mark" and "Confirm AI Mark." Blocks advancing until resolved.
+- **Marking Complete** — final score and percentage, a checklist ("All questions reviewed," "Any AI suggestions changed by the teacher are included"), an unresolved-questions warning if any remain, and "Sign Off Final Mark →".
+- **Mark Finalised & Class Marksheet** — confirms the score is locked ("This mark has been reviewed and approved by the teacher. The script is now final."), provides a **"⬇ Download Marked Script (for Learner)"** button, a **"Mark Next Queued Script (N left) →"** (or **"Upload More Scripts →"**) button, and displays the live **Class Marksheet** table with a **"📗 Download Modern Excel Marksheet (.xlsx)"** button, CSV export, class average badge, and per-learner report download links.
 
 ## Look and Feel
 
@@ -57,20 +60,24 @@ Clean, modern, professional, but approachable — calm and trustworthy, consiste
 - Teacher can edit any extracted question (number, expected answer, marks) before continuing — the AI-extracted standard is never used unchecked.
 - Teacher explicitly confirms the memo ("Looks Good, Continue") before moving forward.
 
-### Learner script intake
-- Teacher uploads exactly one learner script.
-- Verity confirms the script is readable and ready; marking does not start automatically — the teacher clicks "Start AI Marking."
+### Learner script intake (single & bulk)
+- Teacher uploads one learner script or selects multiple scripts in bulk (`.pdf` or `.txt`).
+- Verity extracts and splits each script's answers per question, queues the batch, and confirms the script is ready; marking does not start automatically — the teacher clicks "Start AI Marking."
 
-### Question-by-question AI marking
-- For each question, Verity shows: the learner's answer, a proposed mark (out of the memo's allocation), a short plain-language reason, and a confidence percentage.
+### Question-by-question AI marking with side-by-side memo comparison
+- For each question, Verity shows: the **Memorandum (Expected Answer)** and the **Learner's Answer** side-by-side on the left, and a **Suggested Mark** (out of the memo's allocation), a short plain-language reason ("Why Verity suggested this mark"), and a confidence percentage bar on the right.
 - If confidence is high enough, the teacher can "Confirm" (accept as-is) or "Change Mark" (override the score directly, no explanation required).
-- If confidence is low, the question is flagged "⚠️ Teacher Review Needed" instead of silently proposing a mark; the teacher must "Confirm AI Mark" or "Change Mark" before Verity advances.
-- After confirmation or a saved change, Verity automatically advances to the next question.
+- If confidence is low (<70%), the question is flagged "⚠️ Teacher Review Needed" instead of silently proposing a mark; the teacher must "Confirm AI Mark" or "Change Mark" before Verity advances.
+- After confirmation or a saved change, Verity automatically advances to the next unresolved question.
 
-### Completion and sign-off
+### Completion, sign-off, Excel marksheet & learner report export
 - After the last question, Verity shows the final score, percentage, and a checklist confirming every question was reviewed and any teacher changes are included.
-- Sign-off is blocked if any question is still flagged "Teacher Review Needed" — the teacher is shown which question(s) remain and must resolve them first.
-- Clicking "Sign Off Final Mark" locks the result; the finalized screen states the mark has been reviewed and approved by the educator and is now final.
+- Sign-off is blocked if any question is still unresolved — the teacher is shown which question(s) remain and can jump directly to them.
+- Clicking "Sign Off Final Mark" locks the result; the finalized screen:
+  - States the mark has been reviewed and approved by the teacher and is now final.
+  - Lets the teacher **Download Marked Script (for Learner)** — a clean, printable HTML/PDF report showing each question's learner answer, expected memo answer, awarded mark, and feedback.
+  - Displays the live **Class Marksheet** table across all finalized scripts for the memorandum, with a one-click **Download Modern Excel Marksheet (`.xlsx`)** (formatted with navy headers, per-question columns, pass/review color coding, and a Class Average row) as well as `.csv` export.
+  - Lets the teacher immediately continue to the next queued script when marking a bulk batch.
 
 - As a Mathematics teacher reviewing one learner's script, I want to see Verity's proposed mark and reasoning per question so that I can quickly confirm correct answers and focus my attention on the ones that need judgment.
   - [ ] Each question shows proposed mark, reasoning, and confidence before the teacher acts.
@@ -104,18 +111,19 @@ Clean, modern, professional, but approachable — calm and trustworthy, consiste
 
 ## What We're Building
 
-- Full click-through for one memo and one learner script: landing → memo upload/extraction/edit → script upload → question-by-question AI marking with confidence-based escalation → marking complete → sign-off → finalized.
-- Visible AI reasoning and confidence per question.
+- Full click-through for one memo and single or bulk learner scripts: landing → memo upload/extraction/edit → single/bulk script upload → question-by-question AI marking with side-by-side memo vs. learner answer comparison and confidence-based escalation → marking complete → sign-off → finalized screen with live Class Marksheet, Modern Excel (`.xlsx`) / `.csv` export, and downloadable Marked Script Report for the learner.
+- Plain, approachable English tailored for educators, with a 5-step progress header (`1. Upload Memo` → `2. Check Memo` → `3. Upload Script` → `4. Review Marks` → `5. Final Sign-Off`).
+- Visible AI reasoning and confidence bar per question, alongside side-by-side expected vs. learner answers.
 - Teacher override (Change Mark) available at every question, with identical controls for normal and escalated questions.
 - Hard block on sign-off while any question is unresolved.
 - Graceful handling of unreadable/blank uploads for both memo and script.
 
 ## Deferred From the POC
 
-- Bulk/batch processing of multiple learner scripts (ADF scanner, QR separators) — this PoC is one script at a time.
-- Handwriting OCR — the PoC uses clear, readable (typed or pre-scanned legible) answers.
-- Mark-sheet export, totals/percentages across a class, question-level analytics for intervention.
-- Any authentication, multi-teacher, or role-based access — this PoC is single-teacher, single-session.
+- Live hardware ADF scanner integration and QR separator sheets.
+- Handwriting OCR — the PoC uses clear, readable (typed or pre-scanned legible) `.txt` and `.pdf` answers.
+- Multi-assessment longitudinal analytics and department-wide dashboards.
+- Any authentication, multi-teacher, or role-based access — this PoC is single-teacher, local-first.
 
 ## Possible Later Enhancements
 

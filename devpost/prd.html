@@ -122,27 +122,30 @@
     <details open>
       <summary>Building now</summary>
       <ul class="plain">
-        <li>One memo + one learner script, full click-through to sign-off</li>
-        <li>Visible AI reasoning and confidence per question</li>
+        <li>One memo + single or bulk learner scripts, full click-through to sign-off</li>
+        <li>Plain-English 5-step header &amp; educator-friendly design</li>
+        <li>Side-by-side Memorandum (Expected Answer) vs. Learner's Answer comparison on the marking screen</li>
+        <li>Visible AI reasoning and confidence bar per question</li>
         <li>Teacher override at every question, same controls for normal/escalated</li>
         <li>Hard block on sign-off while unresolved</li>
+        <li>Live Class Marksheet with Modern Excel (<code>.xlsx</code>) &amp; <code>.csv</code> export, plus downloadable Marked Script Report for each learner</li>
         <li>Graceful handling of unreadable/blank uploads</li>
       </ul>
     </details>
     <details>
       <summary>Deferred from the PoC</summary>
       <ul class="plain">
-        <li>Bulk/batch script processing, ADF scanner, QR separators</li>
+        <li>Hardware ADF scanner &amp; QR separator sheets</li>
         <li>Handwriting OCR</li>
-        <li>Mark-sheet export, class totals, question-level analytics</li>
+        <li>Department-wide longitudinal analytics</li>
         <li>Authentication, multi-teacher, role-based access</li>
       </ul>
     </details>
     <details>
       <summary>Open questions</summary>
       <ul class="plain">
-        <li>Exact confidence threshold for escalation — resolved in <code>4-spec</code>/<code>5-build</code></li>
-        <li>Supported file formats for upload — resolved in <code>4-spec</code></li>
+        <li>Exact confidence threshold for escalation — resolved in <code>4-spec</code>/<code>5-build</code> (70%)</li>
+        <li>Supported file formats for upload — resolved in <code>4-spec</code> (<code>.txt</code> and <code>.pdf</code>)</li>
       </ul>
     </details>
   </section>
@@ -152,69 +155,78 @@
 
 <script>
 const stages = [
-  { title:"1. Landing", body:`VERITY ASSESSMENT STUDIO
+  { title:"1. Landing", body:`AI Marking Assistant for Teachers
+
+VERITY ASSESSMENT STUDIO
 AI Marking with the Teacher in Control
 
-Upload a marking memorandum to begin.
+Verity suggests the marks and explains why. You check each answer,
+change any mark you want, and approve the final score.
 
-[ Upload Memorandum ]
+[ Upload Memorandum → ]
+Accepts PDF or TXT files` },
+  { title:"2. Check Your Memorandum", body:`Step 2 of 5 • Check Your Memorandum
+Total Marks: 10   |   Questions: 5
 
-"Verity proposes the marks. The teacher reviews and signs off."` },
-  { title:"2. Check Your Memorandum", body:`Check Your Memorandum
+Q1 (2 marks)  Central Processing Unit.              [ Edit ]
+Q2 (2 marks)  Any valid input device (keyboard...)  [ Edit ]
+Q3 (2 marks)  RAM temporarily stores active data.   [ Edit ]
 
-Q1.1  Expected answer: 12      Marks: 2
-Q1.2  Expected answer: x = 5   Marks: 3
-Q1.3  Expected answer: ...     Marks: 2
-
-[ Edit ]   [ Looks Good, Continue ]` },
+[ Looks Good, Continue → ]` },
   { title:"3. Edit Question", body:`Edit Question
 
-Question: 1.2
-Expected answer: x = 5
-Marks: 3
+Question number: 1
+Expected answer: Central Processing Unit.
+Marks: 2
 
 [ Cancel ]   [ Save Changes ]` },
-  { title:"4. Upload Learner Script", body:`Upload Learner Script
+  { title:"4. Upload Learner Scripts (Single or Bulk)", body:`Step 3 of 5 • Memorandum Confirmed ✓
+Upload Learner Scripts
 
-Upload one learner's completed assessment.
+Click to choose one or more scripts, or drag and drop them here
+Bulk upload supported • Accepts .pdf or .txt files
 
-[ Choose File ]
+→ Learner Script Ready (Bulk Queue • Script 1 of 3)
+  [ Start AI Marking → ]` },
+  { title:"5. Review Marks (Side-by-Side)", body:`[ Q1 ✓ ] [ Q2 ] [ Q3 ]          Reviewed 1 of 5 questions
+------------------------------------------------------------------
+QUESTION 2 COMPARISON (2 marks)   | SUGGESTED MARK (Ready to Confirm)
+                                  |
+Memorandum:     | Learner Answer: | Proposed mark: 2 / 2 (100% conf.)
+Keyboard, mouse | Keyboard        | Why Verity suggested this mark:
+or scanner      |                 | Matches expected answer.
+                                  | [ Change Mark ]   [ Confirm ]` },
+  { title:"6. Review Marks (Escalated)", body:`⚠️ Teacher Review Needed (58% confidence)
 
-→ Learner Script Ready
-  "The memorandum has been confirmed. The script is ready to mark."
-  [ Start AI Marking ]` },
-  { title:"5. Marking (normal)", body:`[ Learner's script ]   |   Question 1.2
-                       |   Learner answer: x = 4
-                       |   AI Proposed Mark: 2 / 3
-                       |   Reason: "Correct method, but the
-                       |   final answer is incorrect."
-                       |   Confidence: 92%
-                       |
-                       |   [ Change Mark ]   [ Confirm ]` },
-  { title:"6. Marking (escalated)", body:`⚠️ Teacher Review Needed
-Confidence: 58%
+Memorandum:                     | Learner Answer:
+RAM stores active program data  | It helps the computer run fast
 
-AI proposed: 1 / 2
-Reason: "The answer may be correct, but part of it is unclear."
+Proposed mark: 1 / 2
+Why Verity suggested this mark:
+"Partially related, but vague on temporary storage."
 
-[ Change Mark ]   [ Confirm AI Mark ]
+[ Change Mark ]   [ Confirm AI Mark ]` },
+  { title:"7. Marking Complete", body:`Step 5 of 5 • Final Review
+Marking Complete
 
-Blocks advancing until resolved.` },
-  { title:"7. Marking Complete", body:`Marking Complete
-
-Final Score: 18 / 20
-Percentage: 90%
+18 / 20  (90% Score)
 
 ✅ All questions reviewed
 ✅ Any AI suggestions changed by the teacher are included
 
-[ Review Answers ]   [ Sign Off Final Mark ]` },
-  { title:"8. Mark Finalised", body:`✅ Mark Finalised
+[ Sign Off Final Mark → ]` },
+  { title:"8. Mark Finalised & Class Marksheet", body:`✅ Mark Finalised (18 / 20 • 90% Final Score)
+"This mark has been reviewed and approved by the teacher."
 
-18 / 20 • 90%
+[ ⬇ Download Marked Script (for Learner) ]  [ Mark Next Queued Script → ]
 
-"This mark has been reviewed and approved by the educator.
-The script is now final."` },
+------------------------------------------------------------------
+Class Marksheet (2 scripts marked)   [ Class Avg: 85% ]
+[ 📗 Download Modern Excel Marksheet (.xlsx) ] [ CSV ]
+
+Learner Script    Q1   Q2   Q3   Total     %     Learner Report
+learner_01.pdf     2    2    2   18/20   90.0%   [ ⬇ Download ]
+learner_02.pdf     2    1    2   16/20   80.0%   [ ⬇ Download ]` },
 ];
 
 const nav = document.getElementById('stepNav');

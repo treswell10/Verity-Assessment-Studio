@@ -80,12 +80,16 @@
 </div>
 
 <div class="stop">
-  <h3>3. The result</h3>
-  <p><code>frontend/src/screens/MarkingScreen.tsx</code> renders each result one at a time. If
-  <code>confidence</code> is below <code>CONFIDENCE_THRESHOLD</code> (70, set in
-  <code>backend/app/config.py</code> and mirrored in <code>client.ts</code>), the question is styled
-  amber with "⚠️ Teacher Review Needed" and blocks advancing until "Confirm AI Mark" or "Change Mark" is
-  used (<code>ChangeMarkModal.tsx</code>, <code>PATCH /api/scripts/{id}/results/{question}</code>).</p>
+  <h3>3. The result &amp; exports</h3>
+  <p><code>frontend/src/screens/MarkingScreen.tsx</code> renders a question pill navigator and displays the
+  <strong>Memorandum (Expected Answer)</strong> and <strong>Learner's Answer</strong> side-by-side alongside
+  the proposed mark, confidence meter, and reason. If <code>confidence</code> is below
+  <code>CONFIDENCE_THRESHOLD</code> (70, set in <code>backend/app/config.py</code> and mirrored in
+  <code>client.ts</code>), the question is styled amber with "⚠️ Teacher Review Needed" and blocks advancing
+  until "Confirm AI Mark" or "Change Mark" is used (<code>ChangeMarkModal.tsx</code>,
+  <code>PATCH /api/scripts/{id}/results/{question}</code>). After sign-off, <code>MarkFinalised.tsx</code>
+  displays the live <strong>Class Marksheet</strong> with one-click <strong>Modern Excel (<code>.xlsx</code>)</strong>
+  export, <strong>printable Marked Script Reports</strong> for learners, and bulk queue progression.</p>
 </div>
 
 <h2>To change this, start here</h2>

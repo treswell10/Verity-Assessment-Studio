@@ -37,34 +37,36 @@ export default function EditQuestionModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-10">
-      <div className="bg-white rounded-2xl shadow-md p-6 max-w-md w-full space-y-4">
-        <h3 className="text-lg font-semibold text-navy">Edit Question</h3>
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center px-4 z-30">
+      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200/80 p-7 max-w-md w-full space-y-4">
+        <div>
+          <h3 className="text-xl font-bold text-navy">Edit Question</h3>
+        </div>
 
-        <label className="block text-sm text-gray-600">
+        <label className="block text-sm font-medium text-slate-700">
           Question number
           <input
-            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="mt-1.5 w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy"
             value={questionNumber}
             onChange={(e) => setQuestionNumber(e.target.value)}
           />
         </label>
 
-        <label className="block text-sm text-gray-600">
+        <label className="block text-sm font-medium text-slate-700">
           Expected answer
           <textarea
-            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-            rows={3}
+            className="mt-1.5 w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy"
+            rows={4}
             value={expectedAnswer}
             onChange={(e) => setExpectedAnswer(e.target.value)}
           />
         </label>
 
-        <label className="block text-sm text-gray-600">
+        <label className="block text-sm font-medium text-slate-700">
           Marks
           <input
             type="number"
-            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="mt-1.5 w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy"
             value={maxMark}
             onChange={(e) => setMaxMark(e.target.value)}
           />
@@ -76,14 +78,14 @@ export default function EditQuestionModal({
           <button
             onClick={onCancel}
             disabled={saving}
-            className="px-4 py-2 rounded-lg text-navy border border-navy/30 hover:bg-navy/5"
+            className="px-4 py-2.5 rounded-xl text-sm font-semibold text-navy border border-slate-300 hover:bg-slate-50 transition"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-4 py-2 rounded-lg bg-navy text-white hover:opacity-90"
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-navy text-white shadow-sm hover:opacity-95 transition"
           >
             Save Changes
           </button>

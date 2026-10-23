@@ -19,11 +19,11 @@ An ordinary South African public school teacher — picture a Mathematics teache
 
 ## The Core Loop
 1. Upload the memorandum — question numbers, expected answers, mark allocations.
-2. Upload one learner script.
-3. Verity proposes a mark and a short reason for each question in turn.
+2. Upload one or more learner scripts (single script or bulk upload).
+3. Verity proposes a mark and a short reason for each question in turn, showing the memorandum's expected answer and the learner's answer side-by-side.
 4. When Verity is unsure, it flags the question for the teacher instead of guessing.
 5. The teacher reviews each proposal — confirms, overrides, or awards a half-mark — then signs off.
-6. Only after sign-off is the mark final.
+6. Only after sign-off is the mark final, added to the live class marksheet (exportable as a styled `.xlsx` Excel file or `.csv`), with a downloadable marked script report ready to send to the learner.
 
 ## Inspiration & Identity
 Calm, trustworthy, document-centric — closer to a careful colleague reading over your shoulder than a flashy AI tool. The proposed mark and reasoning sit directly alongside the learner's actual answer, never replacing it.
@@ -36,17 +36,17 @@ Demo in under a minute: upload a memo, upload a learner script, watch Verity mar
 
 ## The POC Boundary
 - Memo upload with question numbers, expected answers, and mark allocations
-- One learner script, pre-scanned or typed — clear, readable answers (no handwriting OCR)
-- Question-by-question marking: proposed mark + short reasoning per question
+- Single or bulk learner script upload, pre-scanned or typed — clear, readable answers (no handwriting OCR)
+- Question-by-question marking: side-by-side memorandum expected answer vs. learner answer, proposed mark + short reasoning per question, and quick question navigator pills
 - Confidence-based escalation: ambiguous/uncertain answers flagged for the teacher, not auto-marked
 - Teacher review interaction: confirm, override, or award partial/half marks
-- Sign-off step that finalizes the mark
+- Sign-off step that finalizes the mark, updates the live class marksheet, exports a formatted Excel (`.xlsx`) or `.csv` marksheet, and generates a downloadable marked script report for the learner
 
 ## Later
-- Live ADF scanner integration, QR separator sheets, bulk batch processing of a full class
+- Live ADF scanner integration and QR separator sheets
 - Handwriting OCR
-- Mark totals/percentages, mark-sheet export, question-level analytics for intervention
-- Dashboards, role-based access, audit trails, on-prem deployment, data retention rules
+- Question-level analytics for curriculum intervention
+- Dashboards, role-based access, on-prem department deployment, data retention rules
 
 ## Explicitly Cut
 - Multi-teacher / department workflows — out of scope; this PoC is a single teacher, single script

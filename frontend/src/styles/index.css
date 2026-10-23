@@ -3,5 +3,13 @@
 @tailwind utilities;
 
 body {
-  background-color: #fbfaf7;
+  background-color: #f8f7f4;
+  background-image: radial-gradient(#1f335014 1px, transparent 1px);
+  background-size: 24px 24px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #0f172a;
+}
+
+h1, h2, h3 {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
 }

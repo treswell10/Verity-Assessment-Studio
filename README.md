@@ -1,50 +1,109 @@
-# Learn AI Basics — skills
+# Verity Assessment Studio
 
-Devpost Learn hackathon curriculum, packaged as agent skills. Works in any harness that reads `SKILL.md` (Claude Code, Codex, Cursor, …).
+**AI Marking with the Teacher in Control**
 
-## Install
+Verity Assessment Studio is a human-in-the-loop AI assessment marking web application built for educators. Verity extracts questions from a marking memorandum, aligns learner scripts (individually or in bulk), and proposes a mark per question with plain-English reasoning and a confidence score. Whenever the AI is uncertain (`< 70%` confidence), it flags the question for mandatory teacher review instead of guessing. No mark is final until the teacher reviews and signs off.
 
+---
+
+## Key Features
+
+1. **Memorandum Extraction & Verification**
+   - Upload a marking memorandum (`.pdf` or `.txt`) via drag-and-drop.
+   - Verity extracts every question number, expected answer, and maximum mark allocation.
+   - Teachers review total marks and question counts and can edit any question before confirming the memorandum.
+
+2. **Single & Bulk Learner Script Upload**
+   - Upload a single learner script or select multiple scripts in bulk (`.pdf` or `.txt`).
+   - Verity automatically splits each learner's script into per-question answers aligned with the confirmed memorandum and queues the batch for marking.
+
+3. **Side-by-Side Question Review & Confidence Escalation**
+   - **Side-by-Side Comparison:** View the **Memorandum (Expected Answer)** and the **Learner's Answer** right next to each other for every question.
+   - **Transparent AI Suggestions:** Shows the proposed mark, a visual confidence bar, and a plain-English explanation of why that mark was suggested.
+   - **Confidence Escalation (`< 70%`):** Low-confidence or ambiguous answers are highlighted in amber (`⚠️ Teacher Review Needed`) and require explicit teacher action (**Confirm AI Mark** or **Change Mark**).
+   - **Question Navigator Bar:** Jump between questions at any time with live status badges (`✓` reviewed, `!` needs review).
+
+4. **Accountable Teacher Sign-Off**
+   - Sign-off is hard-blocked (`HTTP 409`) if any question remains unreviewed, listing links to jump straight to unresolved questions.
+   - Once all questions are confirmed or adjusted, signing off locks the final score and timestamp.
+
+5. **Modern Excel Class Marksheet (`.xlsx`) & Printable Learner Reports**
+   - **Modern Excel Marksheet (`.xlsx`):** Powered by `openpyxl`, exports a formatted spreadsheet with a navy header banner, per-question mark columns (`Q1 (/2)`), green/amber conditional formatting on percentages, and an automatic **Class Average** summary row (plus `.csv` export).
+   - **Download Marked Script (for Learner):** Downloads a clean, printable HTML/PDF report for each learner containing their final score, teacher sign-off timestamp, side-by-side expected vs. submitted answers, awarded marks, and per-question feedback.
+
+---
+
+## Tech Stack
+
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS (`Plus Jakarta Sans` & `Inter`)
+- **Backend:** Python, FastAPI, SQLAlchemy, SQLite (`verity.db`)
+- **Document & Spreadsheet Processing:** `pypdf` (PDF text extraction), `openpyxl` (styled `.xlsx` marksheets)
+- **Local / On-Prem AI:** Ollama (`qwen2.5:7b-instruct`) via `/api/chat` structured JSON output
+
+---
+
+## Getting Started
+
+### Prerequisites
+- **Python 3.11+**
+- **Node.js 18+**
+- **Ollama** running locally (`http://localhost:11434`) or on an accessible host, with `qwen2.5:7b-instruct` pulled:
+  ```bash
+  ollama pull qwen2.5:7b-instruct
+  ```
+
+### 1. Start the Backend (FastAPI)
+```bash
+cd backend
+python -m venv .venv
+# Windows PowerShell:
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
-npx skills add challengepost/learn-ai-basics --all -y
+*(Optional environment variables: `MARKER_OLLAMA_BASE_URL` and `MARKER_OLLAMA_MODEL`.)*
+
+### 2. Start the Frontend (Vite + React)
+```bash
+cd frontend
+npm install
+npm run dev -- --host 127.0.0.1 --port 5173
 ```
 
-Prerequisites: **node** and **git** installed, and an empty folder set aside for your project.
+Open **`http://127.0.0.1:5173`** in your browser.
 
-## The sequence
+---
 
-| Skill | What happens | Output |
-|---|---|---|
-| `1-start` | Understand the six steps, check your workspace, and introduce your idea and experience | `devpost/learner-profile.md` |
-| `2-scope` | Find or sharpen your idea, identify its kernel, define "done," and keep it proof-of-concept sized | `devpost/scope.md` |
-| `3-prd` | Learner-led product interview grounded in scope: screens, layout, visual style, behavior, edge cases, and a firm now/later boundary. No code talk | `devpost/prd.md` |
-| `4-spec` | How it's built—clarify an unknown, discuss options or recommendations, and agree on a technical plan | `devpost/spec.md` |
-| `5-build` | Verified, committed build steps, hands-on review and revisions, then a short, personalized learning wrap-up | `devpost/checklist.md`, your app, `devpost/app-map.html` |
-| `6-ship` | Prepare the required demo video and public GitHub repository, then write your own submission and exit-survey answers | video, public repository, learner-written submission |
+## Project Structure
 
-**What to expect:** about 2–4 hours of active work, ending in a small working proof of concept — not a product. You learn one process: plan before you build through flipped interaction. This is a beginner-oriented curriculum. Onboarding asks about plan-first/spec-driven experience separately from coding experience: newcomers keep guided support; familiar users can keep explanations concise or batch a few related questions. Those preferences carry forward. The agent interviews, probes, and organizes; you supply the ideas and decisions. Scope, PRD, and spec usually aim for four or five meaningful exchanges, counting existing answers, and draft sooner when the important questions are answered. You can explore further if useful. A clear "looks good" approves a displayed plan—no second sign-off. PRD includes 1–2 relevant design questions so visual choices don't default to generic AI styling. Optional HTML companions for scope, PRD, and spec use diagrams and interactive reveals—not just rendered Markdown. The build checklist stays Markdown-only. Speech-to-text helps a lot.
-
-**Build modes:** learn mode includes a hands-on check and code orientation after every slice. Fast mode keeps verification but reduces explanation and pauses for useful early feedback and final review; extra checkpoints are added only when valuable. A tiny, single-slice build can combine those reviews. Your mode is remembered on resume and can be changed.
-
-**A learning takeaway:** name one thing you'd like to practice or understand, if you have one in mind. After final review and revisions, a three-to-five-minute wrap-up connects a real project moment to a practice you can reuse. Newcomers follow one action through 2–3 code locations, with an optional tiny edit. Familiar plan-first users can instead revisit a real uncertainty, verified change, or planning decision. Practice already completed counts—no repeat exercise. Everyone receives a compact app map with code pointers and a project-grounded practice to reuse. A short reflection is optional; this isn't a quiz or another approval gate.
-
-**Shipping:** a short demo video **and** a public GitHub repository are required; deployment and peer feedback are optional. Write your own project name, short description, other submission fields, and exit-survey answers. The agent can interview you and identify gaps, but only correct spelling and grammar in your copy—never draft or rewrite it. Any optional Discord post or peer feedback must also be human-written. Setup excludes `devpost/learner-profile.md` and local credential files from commits by default; this does not make AI conversations private or remove already-tracked content. Before publishing, still check files and history for secrets and private context. Finish by submitting on Devpost.
-
-Invoke each skill by name in your agent. Starting a fresh conversation between skills is fine — the `devpost/` files carry the context forward.
-
-## Layout
-
+```text
+├── backend/
+│   ├── app/
+│   │   ├── main.py              # FastAPI entrypoint & CORS setup
+│   │   ├── config.py            # Ollama URL/model & CONFIDENCE_THRESHOLD (70%)
+│   │   ├── database.py          # SQLite + SQLAlchemy engine & session
+│   │   ├── models.py            # Memorandum, MemoQuestion, LearnerScript, ScriptAnswer, MarkingResult
+│   │   ├── schemas.py           # Pydantic request/response schemas
+│   │   ├── routers/
+│   │   │   ├── memoranda.py     # Upload, extract, edit, and confirm memoranda
+│   │   │   ├── scripts.py       # Upload & split learner scripts
+│   │   │   └── marking.py       # AI marking, review, sign-off, .xlsx/.csv marksheet, learner report
+│   │   └── services/
+│   │       ├── extraction.py    # .txt and .pdf text extraction (pypdf)
+│   │       └── ollama_client.py # Structured JSON calls to Ollama
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── App.tsx              # 5-step workflow header, state & bulk script queue
+│   │   ├── api/client.ts        # Backend API client
+│   │   └── screens/             # Landing, MemoUpload, MemoCheck, ScriptUpload, ScriptReady,
+│   │                            # MarkingScreen, MarkingComplete, MarkFinalised, Modals
+│   └── package.json
+└── devpost/                     # Scope, PRD, Technical Spec, Checklist & App Map
+    ├── scope.md / scope.html
+    ├── prd.md   / prd.html
+    ├── spec.md  / spec.html
+    ├── checklist.md
+    └── app-map.html
 ```
-skills/<name>/SKILL.md          the skill
-skills/<name>/templates/        document templates the skill fills in
-skills/<name>/references/       deeper material the skill reads on demand
-```
 
-## How progress is tracked
-
-There is no separate progress file. The `devpost/` folder is the state:
-
-- Each planning document (`scope.md`, `prd.md`, `spec.md`, `checklist.md`) carries `status: draft | approved` in its frontmatter. Skills save a draft as soon as one exists and flip it to `approved` when the learner clearly approves the displayed plan. "Looks good" counts; silence does not, and no second sign-off is needed.
-- `learner-profile.md` holds experience, simple pacing preferences, and optional learning context—not progress. It stays out of commits by default.
-- `checklist.md` records the build mode and tracks slices, planned hands-on checkpoints, final review, and learning wrap-up/app map through its `- [ ]` / `- [x]` boxes, plus the git log. The wrap-up retains the `Code Tour and App Map` heading for routing compatibility; completed older tours still count. Checked slices alone do not mean the build is complete.
-
-Every skill opens by inspecting the project's `devpost/`, checking substantive content and status lines (never mistaking curriculum templates or placeholder copies for progress), saying back where the learner is, and routing — forward to the right skill if they're behind, or to the first unfinished thing if they're mid-way. So a fresh conversation at any point costs nothing.

@@ -95,3 +95,9 @@ Reflection: Offered the optional transfer question; learner answered "know all m
 Activity mode: Live app and editor, using an actual debugging moment from the build.
 
 ## Revisions
+
+- **Educator-First Redesign & Plain-English Workflow:** Added persistent 5-step header (`1. Upload Memo` → `2. Check Memo` → `3. Upload Script` → `4. Review Marks` → `5. Final Sign-Off`), interactive drag-and-drop upload zones, question navigator pill bar, and warm, non-technical teacher copy across all screens.
+- **Side-by-Side Memorandum & Learner Answer Comparison:** Updated `MarkingScreen.tsx` and `App.tsx` so teachers see the Memorandum's Expected Answer and the Learner's Answer side-by-side while reviewing AI-proposed marks.
+- **Bulk Script Upload & Batch Queue:** Updated `ScriptUpload.tsx`, `ScriptReady.tsx`, and `App.tsx` so teachers can upload multiple learner scripts at once and step through the batch seamlessly after each sign-off.
+- **Modern Excel Marksheet (`.xlsx`) & Learner Marked Report Download:** Added `openpyxl`-powered `GET /api/scripts/memorandum/{id}/marksheet.xlsx` (styled headers, per-question marks, conditional pass/review color coding, and a Class Average row), `.csv` export, and `GET /api/scripts/{id}/download-report` (printable learner feedback report) in `backend/app/routers/marking.py` and `MarkFinalised.tsx`.
+- **Ollama Intranet & CPU Optimization:** Configured `httpx.Client(trust_env=False)` to bypass system proxy `403` errors and optimized JSON generation (`format="json"`, `temperature=0.1`, `num_predict=1024`) for fast responses on CPU-hosted Ollama instances.

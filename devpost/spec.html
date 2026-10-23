@@ -105,8 +105,8 @@
       <details open><summary>Question-by-question marking <span class="ref">prd.md &gt; Question-by-question AI marking</span></summary>
         <p><code>routers/marking.py</code><br><code>screens/MarkingScreen.tsx</code>, <code>ChangeMarkModal.tsx</code></p>
       </details>
-      <details open><summary>Completion and sign-off <span class="ref">prd.md &gt; Completion and sign-off</span></summary>
-        <p><code>routers/marking.py</code> (summary, sign-off)<br><code>screens/MarkingComplete.tsx</code>, <code>MarkFinalised.tsx</code></p>
+      <details open><summary>Completion, sign-off &amp; exports <span class="ref">prd.md &gt; Completion, sign-off, Excel marksheet &amp; learner report export</span></summary>
+        <p><code>routers/marking.py</code> (summary, sign-off, <code>/marksheet</code>, <code>/marksheet.xlsx</code>, <code>/marksheet.csv</code>, <code>/download-report</code>)<br><code>screens/MarkingComplete.tsx</code>, <code>MarkFinalised.tsx</code></p>
       </details>
     </div>
   </section>
@@ -167,25 +167,27 @@ const stages = [
 → return to frontend for Check Your Memorandum` },
   { title:"3. Check/Edit Memo", body:`PATCH /api/memoranda/{id}/questions/{qid}  — edit one question
 PATCH /api/memoranda/{id}                 — confirm memo (status: confirmed)` },
-  { title:"4. Upload Script", body:`POST /api/scripts (file, memorandum_id)
+  { title:"4. Upload Scripts (Single/Bulk)", body:`POST /api/scripts (file, memorandum_id) — repeated per file in bulk selection
 → extract text
 → Ollama: split into per-question ScriptAnswer rows
-→ frontend shows Learner Script Ready` },
+→ frontend queues batch and shows Learner Script Ready` },
   { title:"5. Start Marking", body:`POST /api/scripts/{id}/mark
 → backend loops every memo question once
 → Ollama: per-question structured mark + reason + confidence
 → saves one MarkingResult per question (status: proposed)
 → all computed before frontend steps through them` },
-  { title:"6. Marking Screen", body:`Frontend fetches MarkingResult list, steps through one at a time.
+  { title:"6. Marking Screen (Side-by-Side)", body:`Frontend renders question pill navigator + side-by-side Memo Expected Answer vs. Learner Answer.
 PATCH /api/scripts/{id}/results/{question}
   → status: confirmed (Confirm) or changed (Change Mark / Confirm AI Mark)` },
   { title:"7. Marking Complete", body:`GET /api/scripts/{id}/summary
 → totals confirmed/changed marks
 → reports any still "proposed" (unresolved)` },
-  { title:"8. Sign Off", body:`POST /api/scripts/{id}/sign-off
+  { title:"8. Sign Off & Exports", body:`POST /api/scripts/{id}/sign-off
 → 409 if any MarkingResult still "proposed"
 → else: script.status = finalized, final_score set
-→ frontend shows Mark Finalised` },
+→ GET /api/scripts/memorandum/{id}/marksheet (live class table)
+→ GET /api/scripts/memorandum/{id}/marksheet.xlsx (styled openpyxl Excel export)
+→ GET /api/scripts/{id}/download-report (printable HTML/PDF report for learner)` },
 ];
 
 const nav = document.getElementById('stepNav');

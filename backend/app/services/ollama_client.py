@@ -11,7 +11,7 @@ class OllamaError(Exception):
 
 
 def chat_structured(system_prompt: str, user_prompt: str, json_schema: dict) -> dict:
-    """Send a chat request constrained to `json_schema` and return the parsed JSON dict.
+    """Send a chat request constrained to JSON and return the parsed JSON dict.
 
     Raises OllamaError on network failure, non-2xx response, or invalid JSON in the
     response content. Callers decide how to treat that (e.g. escalate to teacher review).
@@ -22,11 +22,17 @@ def chat_structured(system_prompt: str, user_prompt: str, json_schema: dict) -> 
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
-        "format": json_schema,
+        "format": "json",
+        "options": {
+            "temperature": 0.1,
+            "num_predict": 1024,
+        },
         "stream": False,
     }
     try:
-        response = httpx.post(f"{OLLAMA_BASE_URL}/api/chat", json=payload, timeout=120)
+        timeout = httpx.Timeout(300.0, connect=10.0)
+        with httpx.Client(trust_env=False, timeout=timeout) as client:
+            response = client.post(f"{OLLAMA_BASE_URL.rstrip('/')}/api/chat", json=payload)
         response.raise_for_status()
     except httpx.HTTPError as exc:
         raise OllamaError(f"Ollama request failed: {exc}") from exc
@@ -44,12 +50,13 @@ def extract_memo_questions(memo_text: str) -> list[dict]:
     from ..schemas import MEMO_EXTRACTION_SCHEMA
 
     system_prompt = (
-        "You are an assistant that extracts a marking memorandum into structured data. "
-        "Read the memorandum text and return every question it contains. For each question, "
-        "'question' must be ONLY the short question number or label exactly as written in the "
-        "memorandum (for example '1.1', '1.2', '2a') — never the question text itself. "
-        "'expected_answer' is the memo's expected/model answer for that question, and 'max_mark' "
-        "is the number of marks it is worth. Keep expected_answer concise but complete."
+        "You are an assistant that extracts a marking memorandum into structured JSON data. "
+        "Read the memorandum text and return a JSON object with a single key \"questions\" containing an array of objects. "
+        "Each object in \"questions\" MUST have exactly these keys: "
+        "\"question\" (string: ONLY the short question number or label exactly as written, e.g. \"1\", \"1.1\", \"2a\" — never the question text itself), "
+        "\"expected_answer\" (string: the memo's expected/model answer, concise but complete), and "
+        "\"max_mark\" (number: the number of marks it is worth). "
+        'Example output: {"questions": [{"question": "1", "expected_answer": "Central Processing Unit.", "max_mark": 2}]}'
     )
     result = chat_structured(system_prompt, memo_text, MEMO_EXTRACTION_SCHEMA)
     return result.get("questions", [])
@@ -60,12 +67,12 @@ def split_script_answers(script_text: str, question_numbers: list[str]) -> list[
     from ..schemas import ANSWER_SPLIT_SCHEMA
 
     system_prompt = (
-        "You are an assistant that splits a learner's assessment script into per-question "
-        "answers. The memorandum has these question numbers, in order: "
-        f"{', '.join(question_numbers)}. Read the learner's script text and return one entry "
-        "per question number, with 'question_number' matching exactly one of the numbers above "
-        "and 'answer_text' containing that question's answer as written by the learner. If a "
-        "question has no answer in the script, return an empty string for answer_text."
+        "You are an assistant that splits a learner's assessment script into per-question answers in JSON format. "
+        "The memorandum has these question numbers, in order: "
+        f"{', '.join(question_numbers)}. Read the learner's script text and return a JSON object with a single key \"answers\" "
+        "containing one object per question number, with \"question_number\" (string matching one of the numbers above) "
+        "and \"answer_text\" (string containing that question's answer as written by the learner, or \"\" if unanswered). "
+        'Example output: {"answers": [{"question_number": "1", "answer_text": "Central Processing Unit"}]}'
     )
     result = chat_structured(system_prompt, script_text, ANSWER_SPLIT_SCHEMA)
     return result.get("answers", [])
@@ -80,11 +87,12 @@ def mark_answer(
     system_prompt = (
         "You are an assistant marking one question of a learner's assessment. You are given "
         "the memorandum's expected answer, the marks available, and the learner's actual "
-        "answer. Propose a mark out of the available marks, give a short plain-language reason "
-        "(one or two sentences), and state your confidence (0-100) that the proposed mark is "
-        "correct. Recognize valid alternative methods and carried-forward errors as full or "
+        "answer. Return a JSON object with keys: \"proposed_mark\" (number out of available marks), "
+        "\"reason\" (string: one or two plain-language sentences), and \"confidence\" (number 0-100). "
+        "Recognize valid alternative methods and carried-forward errors as full or "
         "partial credit where appropriate. Lower your confidence when the answer is ambiguous, "
-        "uses an unconventional method, or is a borderline case."
+        "uses an unconventional method, or is a borderline case. "
+        'Example output: {"proposed_mark": 2, "reason": "Matches expected answer.", "confidence": 95}'
     )
     user_prompt = (
         f"Question {question_number} (out of {max_mark} marks)\n"

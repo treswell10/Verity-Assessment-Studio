@@ -164,3 +164,38 @@ export async function signOffScript(scriptId: number): Promise<SignOffResult> {
   }
   return handle<SignOffResult>(response);
 }
+
+export interface MarksheetRow {
+  script_id: number;
+  filename: string;
+  final_score: number;
+  max_score: number;
+  final_percentage: number;
+  signed_off_at: string | null;
+  question_marks: Record<string, number>;
+}
+
+export interface Marksheet {
+  memorandum_id: number;
+  memorandum_filename: string;
+  max_score: number;
+  question_numbers: string[];
+  scripts: MarksheetRow[];
+}
+
+export async function getMarksheet(memorandumId: number): Promise<Marksheet> {
+  const response = await fetch(`${API_BASE}/api/scripts/memorandum/${memorandumId}/marksheet`);
+  return handle<Marksheet>(response);
+}
+
+export function getMarksheetCsvUrl(memorandumId: number): string {
+  return `${API_BASE}/api/scripts/memorandum/${memorandumId}/marksheet.csv`;
+}
+
+export function getMarksheetXlsxUrl(memorandumId: number): string {
+  return `${API_BASE}/api/scripts/memorandum/${memorandumId}/marksheet.xlsx`;
+}
+
+export function getMarkedScriptReportUrl(scriptId: number): string {
+  return `${API_BASE}/api/scripts/${scriptId}/download-report`;
+}
